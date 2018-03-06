@@ -13,7 +13,7 @@ Script de código aberto e livre, cedido gratuitamente pelo autor.
 Parâmetros para download:
 Locais: Cascavel, Maringá, Curitiba e Guarapuava
 Horário para download: 23:00
-Referencia de dia atual -1
+Referência de dia atual -1 em gnss calendar
 """
 
 import os
