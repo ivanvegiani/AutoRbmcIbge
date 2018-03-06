@@ -4,14 +4,16 @@
 #author: José Ivan Silva Vegiani
 
 """
-AutoBaseIbge:
-version:1.0 
+version:1.0
 Copyright © 2001-2018 Python Software Foundation https://docs.python.org/3/license.html
 author: José Ivan Silva Vegiani
-Automacao de download e gereciado de bases do IBGE
-Código aberto e livre, cedido gratuitamente e voluntáriamente pelo autor.
-ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
-Destinado a todos interessados a utilizar a aplicação, em forma live e gratuita.
+Automacao de download e gerenciamento de dados do rbmc (Ibge)
+rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
+Script de código aberto e livre, cedido gratuitamente pelo autor.
+Parâmetros para download:
+Locais: Cascavel, Maringá, Curitiba e Guarapuava
+Horário para download: 23:00
+Referencia de dia atual -1
 """
 
 import os
@@ -22,8 +24,8 @@ import gnsscal
 
 #manipulando  as datas
 now = datetime.datetime.now()
-print(gnsscal.date2doy(datetime.date(2017,5,17)))
-
+# dia de hoje em Gnss Calendar
+print(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
 
 
 #variáveis globais
