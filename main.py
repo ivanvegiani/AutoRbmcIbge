@@ -20,19 +20,17 @@ import os
 import datetime
 import zipfile
 import ftplib
+from pathlib import PurePath
 import gnsscal
 
 #manipulando  as datas
 now = datetime.datetime.now()
 # dia de hoje em Gnss Calendar
-print(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
+
 
 
 #variáveis globais
 folderYear=str(now.year)
-
-
-
 
 # estruturando pasta raiz
 path1=os.path.join('..','IBGE','rmbc',folderYear)
@@ -44,6 +42,7 @@ if not os.path.exists(os.path.join(path1)):
 path1=os.path.join('..','IBGE','rmbc',folderYear)
 baseFolder=[]
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
+
 # estruturando as pastas dos locais das bases
 if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[0])):
     os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[0]))
@@ -54,18 +53,38 @@ if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[2]))
 if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3])):
     os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
 
-# estruturando os nomes dos arquivos
+# nomeando as pastas alvo
+id_folder_today=int(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
+id_folder_target0=id_folder_today-1
+#test se id_folder_target0 >100
+# id_folder_target0=100
+if id_folder_target0<100:
+    id_folder_target="0"+str(id_folder_target0)
+else:
+    id_folder_target=str(id_folder_target0)
 
+#prefixo dos arquivos de bases do Paraná
+# Cascavel: prcv , Maringá: prma, Curitiba:ufpr e Guarapuava:prgu
+
+#nomenando arquivos alvo
+sufix_file=id_folder_target+"1"+".zip"
+Cascavel_zip="prcv"+sufix_file
+Maringa_zip="prma"+sufix_file
+Curitiba_zip="ufpr"+sufix_file
+Guarapuava_zip="prgu"+sufix_file
 
 
 #trabalhando com ftp
 #ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
 
-# site_address="geoftp.ibge.gov.br"
-# ftp=ftplib.FTP(site_address)
-# ftp.login()
+site_address="geoftp.ibge.gov.br"
+ftp=ftplib.FTP(site_address)
+ftp.login()
 # print(ftp.getwelcome())
 # print(ftp.dir())
-# ftp.cwd('informacoes_sobre_posicionamento_geodesico/rbmc/dados/2018/062')
+dir_cwd0 = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados")
+dir_cwd=dir_cwd0.joinpath(folderYear)
+print(dir_cwd)
+#ftp.cwd('informacoes_sobre_posicionamento_geodesico/rbmc/dados/2018/062')
 # print(ftp.dir())
 # ftp.retrbinary('RETR ufpr0621.zip',open('ufpr0621.zip','w').write)
