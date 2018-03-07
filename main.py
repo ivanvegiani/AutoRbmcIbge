@@ -23,20 +23,27 @@ import ftplib
 from pathlib import PurePath
 import gnsscal
 
-#manipulando  as datas
+#agora é
 now = datetime.datetime.now()
+
 # dia de hoje em Gnss Calendar
+today_gnss=int(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
+# today_gnss=1 # simulando 1 de janeiro
 
+#atribui pasta alvo um dia anterior
+day_target=today_gnss-1
 
+#caso o dia alvo for 0 (data atual sendo 1 de janeiro )
+if  day_target == 0:
+    folderYear =str(int(now.year)-1)
+else:
+    folderYear =str(now.year)
 
-#variáveis globais
-folderYear=str(now.year)
 
 # estruturando pasta raiz
 path1=os.path.join('..','IBGE','rmbc',folderYear)
 if not os.path.exists(os.path.join(path1)):
     os.makedirs(path1)
-
 
 # bases Paraná: Cascavel, Maringá, Curitiba e Guarapuava
 path1=os.path.join('..','IBGE','rmbc',folderYear)
@@ -53,15 +60,15 @@ if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[2]))
 if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3])):
     os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
 
-# nomeando as pastas alvo
-id_folder_today=int(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
-id_folder_target0=id_folder_today-1
-#test se id_folder_target0 >100
-# id_folder_target0=100
-if id_folder_target0<100:
-    id_folder_target="0"+str(id_folder_target0)
+
+# parei aqui, implementar solução para virada do ano 
+# if day_target == 0:
+
+
+if day_target<100:
+    id_folder_target="0"+str(day_target)
 else:
-    id_folder_target=str(id_folder_target0)
+    id_folder_target=str(day_target)
 
 #prefixo dos arquivos de bases do Paraná
 # Cascavel: prcv , Maringá: prma, Curitiba:ufpr e Guarapuava:prgu
