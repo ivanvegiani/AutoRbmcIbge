@@ -61,7 +61,9 @@ if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
     os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
 
 
-# parei aqui, implementar solução para virada do ano 
+# parei aqui, implementar solução para virada do ano
+# if ano % 100 != 0 and ano % 4 == 0 or ano % 400 == 0: verificando se é bissexto
+
 # if day_target == 0:
 
 
