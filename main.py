@@ -5,14 +5,14 @@
 
 """
 version:1.0
-Copyright © 2001-2018 Python Software Foundation https://docs.python.org/3/license.html
 author: José Ivan Silva Vegiani
-Automacao de download e gerenciamento de dados do rbmc (Ibge)
+Automacao de download e deploy de dados do rbmc (Ibge)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
 Script de código aberto e livre, cedido gratuitamente pelo autor.
 Parâmetros para download:
 Locais: Cascavel, Maringá, Curitiba e Guarapuava
-Horário para download: 23:00
+Horário de disponibilização dos arquivos no host: 18:35
+Horário agendado para download: 23:00
 Referência de dia atual -1 em gnss calendar
 """
 
@@ -23,15 +23,17 @@ import ftplib
 from pathlib import PurePath
 import gnsscal
 
+
+
 #agora é
 now = datetime.datetime.now()
 
 # dia de hoje em Gnss Calendar
 today_gnss=int(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
-# today_gnss=1 # simulando 1 de janeiro
 
 #atribui pasta alvo um dia anterior
 day_target=today_gnss-1
+print(today_gnss)
 
 #caso o dia alvo for 0 (data atual sendo 1 de janeiro )
 if  day_target == 0:
@@ -39,6 +41,12 @@ if  day_target == 0:
 else:
     folderYear =str(now.year)
 
+#função verifica se é ano bissexto
+def bissexto():
+    if int(folderYear) % 100 != 0 and int(folderYear) % 4 == 0 or int(folderYear) % 400 == 0:
+         return True
+    else:
+        return False
 
 # estruturando pasta raiz
 path1=os.path.join('..','IBGE','rmbc',folderYear)
@@ -61,22 +69,23 @@ if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
     os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
 
 
-# parei aqui, implementar solução para virada do ano
-# if ano % 100 != 0 and ano % 4 == 0 or ano % 400 == 0: verificando se é bissexto
-
-# if day_target == 0:
-
+# caso seja virada de ano
+if day_target == 0 and bissexto():
+    day_target=366
+if day_target==0:
+    day_target=365
 
 if day_target<100:
-    id_folder_target="0"+str(day_target)
+    id_target="0"+str(day_target)
 else:
-    id_folder_target=str(day_target)
+    id_target=str(day_target)
+
 
 #prefixo dos arquivos de bases do Paraná
 # Cascavel: prcv , Maringá: prma, Curitiba:ufpr e Guarapuava:prgu
 
 #nomenando arquivos alvo
-sufix_file=id_folder_target+"1"+".zip"
+sufix_file=id_target+"1"+".zip"
 Cascavel_zip="prcv"+sufix_file
 Maringa_zip="prma"+sufix_file
 Curitiba_zip="ufpr"+sufix_file
@@ -90,9 +99,11 @@ site_address="geoftp.ibge.gov.br"
 ftp=ftplib.FTP(site_address)
 ftp.login()
 # print(ftp.getwelcome())
-# print(ftp.dir())
+print(ftp.dir())
 dir_cwd0 = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados")
 dir_cwd=dir_cwd0.joinpath(folderYear)
+print(folderYear)
+print(id_target)
 print(dir_cwd)
 #ftp.cwd('informacoes_sobre_posicionamento_geodesico/rbmc/dados/2018/062')
 # print(ftp.dir())
