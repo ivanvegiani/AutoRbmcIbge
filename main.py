@@ -21,19 +21,32 @@ import datetime
 import zipfile
 import ftplib
 from pathlib import PurePath
-import gnsscal
+from pathlib import PurePosixPath
+from pathlib import Path
 
 
+
+def date2doy(date):
+    """Convert date to day of year, return int doy.
+    Example:
+    >>> from datetime import date
+    >>> date2doy(date(2017, 5, 17))
+    137
+    """
+    first_day = datetime.date(date.year, 1, 1)
+    delta = date - first_day
+
+    return delta.days + 1
 
 #agora é
 now = datetime.datetime.now()
 
 # dia de hoje em Gnss Calendar
-today_gnss=int(gnsscal.date2doy(datetime.date(now.year,now.month,now.day)))
+today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
 
 #atribui pasta alvo um dia anterior
 day_target=today_gnss-1
-print(today_gnss)
+# print(today_gnss)
 
 #caso o dia alvo for 0 (data atual sendo 1 de janeiro )
 if  day_target == 0:
@@ -86,10 +99,15 @@ else:
 
 #nomenando arquivos alvo
 sufix_file=id_target+"1"+".zip"
-Cascavel_zip="prcv"+sufix_file
-Maringa_zip="prma"+sufix_file
-Curitiba_zip="ufpr"+sufix_file
-Guarapuava_zip="prgu"+sufix_file
+file_target=["prcv"+sufix_file,"prma"+sufix_file,"ufpr"+sufix_file,"prgu"+sufix_file]
+
+# paths Locais, criando paths absolutos
+paths_bases_globais=[]
+#
+for p in range(4):
+    paths_bases_globais0=os.path.join("..",'IBGE','rmbc',folderYear,baseFolder[p])
+    p1 = Path(paths_bases_globais0)
+    paths_bases_globais.append(p1.resolve())
 
 
 #trabalhando com ftp
@@ -98,13 +116,13 @@ Guarapuava_zip="prgu"+sufix_file
 site_address="geoftp.ibge.gov.br"
 ftp=ftplib.FTP(site_address)
 ftp.login()
-# print(ftp.getwelcome())
-print(ftp.dir())
-dir_cwd0 = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados")
-dir_cwd=dir_cwd0.joinpath(folderYear)
-print(folderYear)
-print(id_target)
-print(dir_cwd)
-#ftp.cwd('informacoes_sobre_posicionamento_geodesico/rbmc/dados/2018/062')
-# print(ftp.dir())
-# ftp.retrbinary('RETR ufpr0621.zip',open('ufpr0621.zip','w').write)
+
+dir_cwd = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+folderYear+"/"+id_target)
+
+ftp.cwd(str(dir_cwd))
+
+i=0
+for p in paths_bases_globais:
+    p = open(str(paths_bases_globais[i])+"/"+file_target[i], "wb")
+    ftp.retrbinary("RETR " + file_target[i], p.write)
+    i=i+1
