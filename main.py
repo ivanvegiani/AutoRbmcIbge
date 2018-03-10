@@ -24,6 +24,8 @@ from pathlib import PurePath
 from pathlib import PurePosixPath
 from pathlib import Path
 
+
+#variaveis globais
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
 
 def date2doy(date):
@@ -37,7 +39,7 @@ def date2doy(date):
     delta = date - first_day
     return delta.days + 1
 
-def folderYear():
+def folderYearFunction():
 
     now = datetime.datetime.now()
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
@@ -54,7 +56,7 @@ def bissexto(folderYear):
     else:
         return False
 
-def id_target(day_delay):
+def id_target_function(day_delay):
     """ Retorna id_target (identificação do dia alvo)
     """
     now = datetime.datetime.now()
@@ -99,21 +101,13 @@ def download_ftp(address,paths_bases_globais):
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
-# except ftplib.error_perm::
-    try:
-        dir_cwd = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+folderYear+"/"+id_target)
-        ftp.cwd(str(dir_cwd))
-    except ftplib.error_perm:
-        pass
-        # print("deu certo")
+    dir_cwd = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+folderYear+"/"+id_target)
+    ftp.cwd(str(dir_cwd))
     i=0
     for p in paths_bases_globais:
-        try:
-            p = open(str(paths_bases_globais[i])+"/"+file_target[i], "wb")
-            ftp.retrbinary("RETR " + file_target[i], p.write)
-            i=i+1
-        except ftplib.error_perm:
-            print("deu certo")
+        p = open(str(paths_bases_globais[i])+"/"+file_target[i], "wb")
+        ftp.retrbinary("RETR " + file_target[i], p.write)
+        i=i+1
     ftp.quit()
 
 def paths_bases_globais(folderYear):
@@ -130,11 +124,18 @@ def extracts():
     zip_ref.extractall(directory_to_extract_to)
     zip_ref.close()
 
-
-
 # -----------------------------main ------------------------------#
-folderYear=folderYear()
-id_target=id_target(1)
-folder_root(folderYear)
-file_target=names_File_Target(id_target)
-download_ftp("geoftp.ibge.gov.br",paths_bases_globais(folderYear))
+a=True
+day=0
+while a:
+    day=day+1
+    folderYear=folderYearFunction()
+    local_Bases_Folders(folderYear)
+    id_target=id_target_function(day)
+    folder_root(folderYear)
+    file_target=names_File_Target(id_target)
+    try:
+        download_ftp("geoftp.ibge.gov.br",paths_bases_globais(folderYear))
+        a=False
+    except ftplib.error_perm:
+        a=True
