@@ -95,16 +95,25 @@ def names_File_Target(id_target):
     return file_target
 
 def download_ftp(address,paths_bases_globais):
+
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
-    dir_cwd = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+folderYear+"/"+id_target)
-    ftp.cwd(str(dir_cwd))
+# except ftplib.error_perm::
+    try:
+        dir_cwd = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+folderYear+"/"+id_target)
+        ftp.cwd(str(dir_cwd))
+    except ftplib.error_perm:
+        pass
+        # print("deu certo")
     i=0
     for p in paths_bases_globais:
-        p = open(str(paths_bases_globais[i])+"/"+file_target[i], "wb")
-        ftp.retrbinary("RETR " + file_target[i], p.write)
-        i=i+1
+        try:
+            p = open(str(paths_bases_globais[i])+"/"+file_target[i], "wb")
+            ftp.retrbinary("RETR " + file_target[i], p.write)
+            i=i+1
+        except ftplib.error_perm:
+            print("deu certo")
     ftp.quit()
 
 def paths_bases_globais(folderYear):
@@ -114,6 +123,14 @@ def paths_bases_globais(folderYear):
         p1 = Path(paths_bases_globais0)
         paths_bases_globais.append(p1.resolve())
     return paths_bases_globais
+
+def extracts():
+
+    zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
+    zip_ref.extractall(directory_to_extract_to)
+    zip_ref.close()
+
+
 
 # -----------------------------main ------------------------------#
 folderYear=folderYear()
