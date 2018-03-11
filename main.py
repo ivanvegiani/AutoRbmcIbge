@@ -27,6 +27,9 @@ from pathlib import Path
 
 #variaveis globais
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
+paths_bases_globais_list=[]
+paths_extracts=[]
+
 
 def date2doy(date):
     """Convert date to day of year, return int doy.
@@ -52,7 +55,7 @@ def folderYearFunction():
 
 def bissexto(folderYear):
     if int(folderYear) % 100 != 0 and int(folderYear) % 4 == 0 or int(folderYear) % 400 == 0:
-         return True
+        return True
     else:
         return False
 
@@ -63,7 +66,7 @@ def id_target_function(day_delay):
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
     day_target=today_gnss-day_delay
     #caso seja virada de ano
-    if day_target == 0 and bissexto():
+    if day_target == 0 and bissexto(folderYear):
         day_target=366
     if day_target==0:
         day_target=365
@@ -115,18 +118,28 @@ def paths_bases_globais(folderYear):
     for p in range(4):
         paths_bases_globais0=os.path.join("..",'IBGE','rmbc',folderYear,baseFolder[p])
         p1 = Path(paths_bases_globais0)
-        paths_bases_globais.append(p1.resolve())
-    return paths_bases_globais
+        paths_bases_globais_list.append(p1.resolve())
+    return paths_bases_globais_list
 
-def extracts():
+def extracts(paths_bases_globais_list):
+    j=0
+    for b in baseFolder:
+        if not os.path.exists(os.path.join(str(paths_bases_globais_list[j]),"extracts")):
+            os.makedirs(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
+        paths_extracts.append(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
+        j=j+1
+    i=0
+    for c in baseFolder:
+        zip1 = zipfile.ZipFile(str(paths_bases_globais_list[i])+"/"+file_target[i])
+        zip1.extractall(str(paths_extracts[i]))
+        i=i+1
+    zip1.close()
 
-    zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
-    zip_ref.extractall(directory_to_extract_to)
-    zip_ref.close()
 
 # -----------------------------main ------------------------------#
 a=True
 day=0
+day=1
 while a:
     day=day+1
     folderYear=folderYearFunction()
@@ -134,8 +147,14 @@ while a:
     id_target=id_target_function(day)
     folder_root(folderYear)
     file_target=names_File_Target(id_target)
-    try:
-        download_ftp("geoftp.ibge.gov.br",paths_bases_globais(folderYear))
-        a=False
-    except ftplib.error_perm:
-        a=True
+    a=False
+    # try:
+    #     download_ftp("geoftp.ibge.gov.br",paths_bases_globais(folderYear))
+    #     a=False
+    # except ftplib.error_perm:
+    #     a=True
+paths_bases_globais_list=paths_bases_globais(folderYear)
+# print(str(paths_bases_globais_list[0])+"/"+file_target[0])
+extracts(paths_bases_globais_list)
+print(str(paths_extracts[3]))
+print(str(paths_bases_globais_list[3])+"/"+file_target[3])
