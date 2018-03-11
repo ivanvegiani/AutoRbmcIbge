@@ -1,5 +1,6 @@
 # coding: utf-8
 # version:1.0
+#python 3
 # ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
 
 """
@@ -99,26 +100,30 @@ def names_File_Target(id_target):
     file_target=["prcv"+sufix_file,"prma"+sufix_file,"ufpr"+sufix_file,"prgu"+sufix_file]
     return file_target
 
-def download_ftp(address,paths_bases_globais):
+def download_ftp(address,paths_bases_globais_list):
 
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
-    dir_cwd = PurePath("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+folderYear+"/"+id_target)
+    dir_cwd = str("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+'/'+folderYear+"/"+id_target)
+    print(ftp.dir())
+    print(dir_cwd)
     ftp.cwd(str(dir_cwd))
     i=0
-    for p in paths_bases_globais:
-        p = open(str(paths_bases_globais[i])+"/"+file_target[i], "wb")
+    for p in baseFolder:
+        p = open(str(paths_bases_globais_list[i])+"/"+file_target[i], "wb")
         ftp.retrbinary("RETR " + file_target[i], p.write)
         i=i+1
     ftp.quit()
 
 def paths_bases_globais(folderYear):
     paths_bases_globais=[]
-    for p in range(4):
-        paths_bases_globais0=os.path.join("..",'IBGE','rmbc',folderYear,baseFolder[p])
+    i=0
+    for p in baseFolder:
+        paths_bases_globais0=os.path.join("..",'IBGE','rmbc',folderYear,baseFolder[i])
         p1 = Path(paths_bases_globais0)
         paths_bases_globais_list.append(p1.resolve())
+        i=i+1
     return paths_bases_globais_list
 
 def extracts(paths_bases_globais_list):
@@ -136,10 +141,9 @@ def extracts(paths_bases_globais_list):
     zip1.close()
 
 
-# -----------------------------main ------------------------------#
+# ----------------------------------------------------main ---------------------------------------------------------#
 a=True
 day=0
-day=1
 while a:
     day=day+1
     folderYear=folderYearFunction()
@@ -147,14 +151,17 @@ while a:
     id_target=id_target_function(day)
     folder_root(folderYear)
     file_target=names_File_Target(id_target)
-    a=False
-    # try:
-    #     download_ftp("geoftp.ibge.gov.br",paths_bases_globais(folderYear))
-    #     a=False
-    # except ftplib.error_perm:
-    #     a=True
-paths_bases_globais_list=paths_bases_globais(folderYear)
-# print(str(paths_bases_globais_list[0])+"/"+file_target[0])
-extracts(paths_bases_globais_list)
-print(str(paths_extracts[3]))
-print(str(paths_bases_globais_list[3])+"/"+file_target[3])
+    paths_bases_globais_list=paths_bases_globais(folderYear)
+    try:
+        download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list)
+        a=False
+    except ftplib.error_perm:
+        a=True
+try:
+    extracts(paths_bases_globais_list)
+except FileNotFoundError:
+    time.sleep(60*3)
+    try:
+        extracts(paths_bases_globais_list)
+    except FileNotFoundError:
+        print('se chegou aqui deu algum erro')
