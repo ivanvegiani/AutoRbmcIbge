@@ -24,6 +24,7 @@ import ftplib
 from pathlib import PurePath
 from pathlib import PurePosixPath
 from pathlib import Path
+from socket import gethostbyname, gaierror
 
 
 #variaveis globais
@@ -81,11 +82,6 @@ def id_target_function(day_delay):
         id_target=str(day_target)
     return id_target
 
-def folder_root(folderYear):
-    # estruturando pasta raiz
-    path1=os.path.join('..','IBGE','rmbc',folderYear)
-    if not os.path.exists(os.path.join(path1)):
-        os.makedirs(path1)
 
 def local_Bases_Folders(folderYear):
     if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[0])):
@@ -109,13 +105,15 @@ def download_ftp(address,paths_bases_globais_list):
     ftp=ftplib.FTP(site_address)
     ftp.login()
     dir_cwd = str("informacoes_sobre_posicionamento_geodesico/rbmc/dados"+'/'+folderYear+"/"+id_target)
-    print(ftp.dir())
-    print(dir_cwd)
+    # print(ftp.dir())
+    print('Conectado em ftp://geoftp.ibge.gov.br')
     ftp.cwd(str(dir_cwd))
     i=0
     for p in file_target:
         p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
+        print('Downloading file '+file_target[i]+' para '+str(paths_bases_globais_list[i]))
         ftp.retrbinary("RETR " + file_target[i], p.write)
+
         i=i+1
     ftp.quit()
 
@@ -137,9 +135,8 @@ def extracts(paths_bases_globais_list):
         paths_extracts.append(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
         j=j+1
     i=0
-    print(len(paths_bases_globais_list))
-    print(len(file_target))
     for z in paths_bases_globais_list:
+        print('Extraindo para '+str(paths_extracts[i]))
         zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
         zip1.extractall(str(paths_extracts[i]))
         i=i+1
@@ -147,31 +144,37 @@ def extracts(paths_bases_globais_list):
 
 # ----------------------------------------------------main ---------------------------------------------------------#
 
-a=True
+aa=True
 day=0
-while a:
+bb=0
+while aa and bb<=6:
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
     id_target=''
     file_target=[]
     day=day+1
+    bb=bb+1 #evita loop infinito, caso o site esteja off-line, except gaierror:
     folderYear=folderYearFunction()
     local_Bases_Folders(folderYear)
     id_target=id_target_function(day)
-    folder_root(folderYear)
     file_target=names_File_Target(id_target)
     paths_bases_globais_list=paths_bases_globais(folderYear)
-    try:
-        download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list)
-        a=False
-    except ftplib.error_perm:
-        a=True
-try:
-    extracts(paths_bases_globais_list)
-except FileNotFoundError:
-    time.sleep(60*3)
-    try:
-        extracts(paths_bases_globais_list)
-    except FileNotFoundError:
-        print('se chegou aqui deu algum erro')
+    i=0
+    for exist in paths_bases_globais_list:
+        if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
+            i=i+1
+            try:
+                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list)
+            except gaierror:
+                print('Sem conexão com o host')
+            except ftplib.error_perm:
+                aa=True
+            try:
+                extracts(paths_bases_globais_list)
+            except FileNotFoundError:
+                time.sleep(60*3)
+                try:
+                    extracts(paths_bases_globais_list)
+                except FileNotFoundError:
+                    print('Erro de extração de dados, unzip!')
