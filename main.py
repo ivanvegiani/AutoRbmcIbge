@@ -154,7 +154,7 @@ while aa and bb<=6:
     id_target=''
     file_target=[]
     day=day+1
-    bb=bb+1 #evita loop infinito, caso o site esteja off-line, except gaierror:
+    bb=bb+1 #evita loop infinito, caso o site esteja off-line, e determina quantos arquivos para trás podem ser baixados
     folderYear=folderYearFunction()
     local_Bases_Folders(folderYear)
     id_target=id_target_function(day)
