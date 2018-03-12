@@ -30,6 +30,9 @@ from pathlib import Path
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
 paths_bases_globais_list=[]
 paths_extracts=[]
+folderYear=''
+id_target=''
+file_target=[]
 
 
 def date2doy(date):
@@ -105,13 +108,13 @@ def download_ftp(address,paths_bases_globais_list):
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
-    dir_cwd = str("informacoes_sobre_posicionamento_geodesico/rbmc/dados/"+'/'+folderYear+"/"+id_target)
+    dir_cwd = str("informacoes_sobre_posicionamento_geodesico/rbmc/dados"+'/'+folderYear+"/"+id_target)
     print(ftp.dir())
     print(dir_cwd)
     ftp.cwd(str(dir_cwd))
     i=0
-    for p in baseFolder:
-        p = open(str(paths_bases_globais_list[i])+"/"+file_target[i], "wb")
+    for p in file_target:
+        p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
         ftp.retrbinary("RETR " + file_target[i], p.write)
         i=i+1
     ftp.quit()
@@ -134,17 +137,24 @@ def extracts(paths_bases_globais_list):
         paths_extracts.append(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
         j=j+1
     i=0
-    for c in baseFolder:
-        zip1 = zipfile.ZipFile(str(paths_bases_globais_list[i])+"/"+file_target[i])
+    print(len(paths_bases_globais_list))
+    print(len(file_target))
+    for z in paths_bases_globais_list:
+        zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
         zip1.extractall(str(paths_extracts[i]))
         i=i+1
     zip1.close()
 
-
 # ----------------------------------------------------main ---------------------------------------------------------#
+
 a=True
 day=0
 while a:
+    paths_bases_globais_list=[]
+    paths_extracts=[]
+    folderYear=''
+    id_target=''
+    file_target=[]
     day=day+1
     folderYear=folderYearFunction()
     local_Bases_Folders(folderYear)
