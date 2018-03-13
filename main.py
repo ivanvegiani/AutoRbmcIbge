@@ -34,6 +34,7 @@ paths_extracts=[]
 folderYear=''
 id_target=''
 file_target=[]
+path_root='c:\IBGE'
 
 
 def date2doy(date):
@@ -83,15 +84,12 @@ def id_target_function(day_delay):
     return id_target
 
 
-def local_Bases_Folders(folderYear):
-    if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[0])):
-        os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[0]))
-    if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[1])):
-        os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[1]))
-    if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[2])):
-        os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[2]))
-    if not os.path.exists(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3])):
-        os.makedirs(os.path.join('..','IBGE','rmbc',folderYear,baseFolder[3]))
+def local_Bases_Folders(path_root,folderYear):
+    i=0
+    for paths in baseFolder:
+        if not os.path.exists(os.path.join(path_root,folderYear,baseFolder[i])):
+            os.makedirs(os.path.join(path_root,folderYear,baseFolder[i]))
+        i=i+1
 
 def names_File_Target(id_target):
     # Cascavel: prcv , Maringá: prma, Curitiba:ufpr e Guarapuava:prgu
@@ -117,11 +115,10 @@ def download_ftp(address,paths_bases_globais_list):
         i=i+1
     ftp.quit()
 
-def paths_bases_globais(folderYear):
-    paths_bases_globais=[]
+def paths_bases_globais(path_root,folderYear):
     i=0
     for p in baseFolder:
-        paths_bases_globais0=os.path.join("..",'IBGE','rmbc',folderYear,baseFolder[i])
+        paths_bases_globais0=os.path.join(path_root,folderYear,baseFolder[i])
         p1 = Path(paths_bases_globais0)
         paths_bases_globais_list.append(p1.resolve())
         i=i+1
@@ -147,19 +144,19 @@ def extracts(paths_bases_globais_list):
 aa=True
 day=0
 bb=0
-while aa and bb<=6:
+while aa and bb<=10: # variável bb determina quantos arquivos para trás podem ser baixados
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
     id_target=''
     file_target=[]
     day=day+1
-    bb=bb+1 #evita loop infinito, caso o site esteja off-line, e determina quantos arquivos para trás podem ser baixados
+    bb=bb+1 #evita loop infinito, caso o site esteja off-line
     folderYear=folderYearFunction()
-    local_Bases_Folders(folderYear)
+    local_Bases_Folders(path_root,folderYear)
     id_target=id_target_function(day)
     file_target=names_File_Target(id_target)
-    paths_bases_globais_list=paths_bases_globais(folderYear)
+    paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
     i=0
     for exist in paths_bases_globais_list:
         if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
