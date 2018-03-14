@@ -25,6 +25,9 @@ from pathlib import PurePath
 from pathlib import PurePosixPath
 from pathlib import Path
 from socket import gethostbyname, gaierror
+import logging
+
+
 
 
 #variaveis globais
@@ -35,6 +38,13 @@ folderYear=''
 id_target=''
 file_target=[]
 path_root='c:\IBGE'
+
+def logs_info(mensagem):
+    now1 = datetime.datetime.now()
+    year=str(now1.year)
+    format0='%(asctime)s - %(message)s'
+    logging.basicConfig(filename='log'+year+'.txt',level=logging.INFO, format=format0,datefmt='%d/%m/%y %I:%M:%S')
+    logging.info(mensagem)
 
 
 def date2doy(date):
@@ -48,15 +58,16 @@ def date2doy(date):
     delta = date - first_day
     return delta.days + 1
 
-def folderYearFunction():
+def folderYearFunction(day_delay):
 
     now = datetime.datetime.now()
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
-    day_target=today_gnss-1
-    if  day_target == 0:
+    day_target=today_gnss-day_delay
+    if  day_target <= 0  :
         folderYear =str(int(now.year)-1)
     else:
         folderYear =str(now.year)
+
     return folderYear
 
 def bissexto(folderYear):
@@ -71,16 +82,41 @@ def id_target_function(day_delay):
     now = datetime.datetime.now()
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
     day_target=today_gnss-day_delay
-    #caso seja virada de ano
-    if day_target == 0 and bissexto(folderYear):
-        day_target=366
-    if day_target==0:
-        day_target=365
-    #adicionando o 0 antes de 100
-    if day_target<100:
+
+# definindo o id_target
+    if day_target<100 and day_target>=10 and day_target>0:
         id_target="0"+str(day_target)
-    else:
+    elif day_target>=100:
         id_target=str(day_target)
+    else:
+        id_target="00"+str(day_target)
+
+
+    # em casos de virada de ano
+    if day_target == 0:
+        if bissexto(folderYear):
+            day_target=366
+            id_target=str(day_target)
+        else:
+            day_target=365
+            id_target=str(day_target)
+
+
+    if day_target<0:
+        if bissexto(folderYear):
+            day_target=366+day_target
+
+        else:
+            day_target=366+day_target
+
+
+    if day_target<100 and day_target>=10 and day_target>0:
+        id_target="0"+str(day_target)
+    elif day_target>=100:
+        id_target=str(day_target)
+    else:
+        id_target="00"+str(day_target)
+
     return id_target
 
 
@@ -104,14 +140,15 @@ def download_ftp(address,paths_bases_globais_list):
     ftp.login()
     dir_cwd = str("informacoes_sobre_posicionamento_geodesico/rbmc/dados"+'/'+folderYear+"/"+id_target)
     # print(ftp.dir())
-    print('Conectado em ftp://geoftp.ibge.gov.br')
+    print('\nConectado em ftp://geoftp.ibge.gov.br \n')
     ftp.cwd(str(dir_cwd))
     i=0
     for p in file_target:
         p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
         print('Downloading file '+file_target[i]+' para '+str(paths_bases_globais_list[i]))
         ftp.retrbinary("RETR " + file_target[i], p.write)
-
+        print('Download file '+file_target[i]+' sucess\n')
+        logs_info('Download file '+file_target[i]+' sucess')
         i=i+1
     ftp.quit()
 
@@ -142,9 +179,9 @@ def extracts(paths_bases_globais_list):
 # ----------------------------------------------------main ---------------------------------------------------------#
 
 aa=True
-day=0
+day=60
 bb=0
-while aa and bb<=10: # variável bb determina quantos arquivos para trás podem ser baixados
+while aa and bb<=30: # variável bb determina quantos arquivos para trás podem ser baixados
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
@@ -152,7 +189,7 @@ while aa and bb<=10: # variável bb determina quantos arquivos para trás podem 
     file_target=[]
     day=day+1
     bb=bb+1 #evita loop infinito, caso o site esteja off-line
-    folderYear=folderYearFunction()
+    folderYear=folderYearFunction(day)
     local_Bases_Folders(path_root,folderYear)
     id_target=id_target_function(day)
     file_target=names_File_Target(id_target)
@@ -170,8 +207,8 @@ while aa and bb<=10: # variável bb determina quantos arquivos para trás podem 
             try:
                 extracts(paths_bases_globais_list)
             except FileNotFoundError:
-                time.sleep(60*3)
+                # time.sleep(60*3)
                 try:
                     extracts(paths_bases_globais_list)
                 except FileNotFoundError:
-                    print('Erro de extração de dados, unzip!')
+                    print('Erro de extração de dados, FileNotFoundError')
