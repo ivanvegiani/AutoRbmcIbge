@@ -5,14 +5,12 @@
 
 """
 version:1.0
-author: José Ivan Silva Vegiani
+author: Jose Ivan Silva Vegiani
 Automacao de download e deploy de dados do rbmc (Ibge)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
 Script de código aberto e livre, cedido gratuitamente pelo autor.
 Parâmetros para download:
 Locais: Cascavel, Maringá, Curitiba e Guarapuava
-Horário de disponibilização dos arquivos no host: 18:35
-Horário agendado para download: 23:00
 Referência de dia atual -1 em gnss calendar
 """
 
@@ -26,6 +24,9 @@ from pathlib import PurePosixPath
 from pathlib import Path
 from socket import gethostbyname, gaierror
 import logging
+import sys
+import subprocess
+
 
 
 
@@ -38,12 +39,13 @@ folderYear=''
 id_target=''
 file_target=[]
 path_root='c:\IBGE'
+today_gnss=0
 
 def logs_info(mensagem):
     now1 = datetime.datetime.now()
     year=str(now1.year)
     format0='%(asctime)s - %(message)s'
-    logging.basicConfig(filename='log'+year+'.txt',level=logging.INFO, format=format0,datefmt='%d/%m/%y %I:%M:%S')
+    logging.basicConfig(filename='log'+year+'.txt',level=logging.INFO, format=format0,datefmt='%d/%m/%y %I:%M:%S %p')
     logging.info(mensagem)
 
 
@@ -133,13 +135,12 @@ def names_File_Target(id_target):
     file_target=["prcv"+sufix_file,"prma"+sufix_file,"ufpr"+sufix_file,"prgu"+sufix_file]
     return file_target
 
-def download_ftp(address,paths_bases_globais_list):
-
+def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_target):
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
     dir_cwd = str("informacoes_sobre_posicionamento_geodesico/rbmc/dados"+'/'+folderYear+"/"+id_target)
-    # print(ftp.dir())
+    print (str(dir_cwd))
     print('\nConectado em ftp://geoftp.ibge.gov.br \n')
     ftp.cwd(str(dir_cwd))
     i=0
@@ -150,6 +151,7 @@ def download_ftp(address,paths_bases_globais_list):
         print('Download file '+file_target[i]+' sucess\n')
         logs_info('Download file '+file_target[i]+' sucess')
         i=i+1
+    print(file_target)
     ftp.quit()
 
 def paths_bases_globais(path_root,folderYear):
@@ -161,34 +163,43 @@ def paths_bases_globais(path_root,folderYear):
         i=i+1
     return paths_bases_globais_list
 
-def extracts(paths_bases_globais_list):
+def extracts(paths_extracts,paths_bases_globais_list,file_target):
     j=0
-    for b in baseFolder:
+    for b in range(4):
         if not os.path.exists(os.path.join(str(paths_bases_globais_list[j]),"extracts")):
             os.makedirs(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
         paths_extracts.append(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
         j=j+1
     i=0
-    for z in paths_bases_globais_list:
+    for z in range(4):
+        print(paths_extracts)
         print('Extraindo para '+str(paths_extracts[i]))
         zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
         zip1.extractall(str(paths_extracts[i]))
+        logs_info('Extraido '+file_target[i]+' com sucesso')
         i=i+1
+    i=0
     zip1.close()
+    
+    print(paths_extracts)
+def dia_de_hoje():
+    now = datetime.datetime.now()
+    today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
+    return today_gnss
 
-# ----------------------------------------------------main ---------------------------------------------------------#
-
-aa=True
-day=60
-bb=0
-while aa and bb<=30: # variável bb determina quantos arquivos para trás podem ser baixados
+def conversao_dia(dia,mes,ano):
+    var=datetime.date(ano,mes,dia)
+    alvo=int(date2doy(datetime.date(var.year,var.month,var.day)))
+    return alvo
+    
+    
+def rotina(day):
+     
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
     id_target=''
     file_target=[]
-    day=day+1
-    bb=bb+1 #evita loop infinito, caso o site esteja off-line
     folderYear=folderYearFunction(day)
     local_Bases_Folders(path_root,folderYear)
     id_target=id_target_function(day)
@@ -197,18 +208,64 @@ while aa and bb<=30: # variável bb determina quantos arquivos para trás podem 
     i=0
     for exist in paths_bases_globais_list:
         if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
-            i=i+1
             try:
-                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list)
+                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target)
             except gaierror:
-                print('Sem conexão com o host')
+                print('Sem conexão com o servidor ftp://geoftp.ibge.gov.br')
+                logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
             except ftplib.error_perm:
+                logs_info('Arquivo '+file_target[i]+' não encontrado')
+                print('Arquivo '+file_target[i]+' não encontrado')
                 aa=True
             try:
-                extracts(paths_bases_globais_list)
+                extracts(paths_extracts,paths_bases_globais_list,file_target)
+                paths_extracts.clear()
             except FileNotFoundError:
-                # time.sleep(60*3)
-                try:
-                    extracts(paths_bases_globais_list)
-                except FileNotFoundError:
-                    print('Erro de extração de dados, FileNotFoundError')
+                print('Erro de extração de dados, FileNotFoundError')
+                logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+            except zipfile.BadZipFile:
+                logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+                print('Erro de extração de dados, FileNotFoundError')     
+    i=i+1
+    del paths_bases_globais_list
+    
+    del folderYear
+    del id_target
+    del file_target
+    
+ 
+    
+    
+# ----------------------------------------------------main ---------------------------------------------------------#
+
+r=False
+a1=True
+while a1:
+    print('Deseja escolher alguma data específica para baixar a base?')
+    print('digite "yes" para escolher uma data')
+    print('digite "no" para deixar baixar automaticamente')
+    resp=input()
+    if resp == 'yes':
+        r=True
+        a1=False
+    elif resp =='no':
+        r=False
+        a1=False
+    else:
+        print('Favor inserir uma resposta válida')
+        a1=True
+if r:
+    dia=int(input('Qual dia?\n'))
+    mes=int(input('Qual mês?\n'))
+    ano=int(input('Qual ano\n'))
+else:
+    pass
+
+aa=True
+day=0
+bb=0
+while aa and bb<=30: # variável bb determina quantos arquivos para trás podem ser baixados
+    day=day+1
+    bb=bb+1 #evita loop infinito, caso o site esteja off-line
+    rotina(day)
+    
