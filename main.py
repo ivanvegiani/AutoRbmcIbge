@@ -28,9 +28,6 @@ import sys
 import subprocess
 
 
-
-
-
 #variaveis globais
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
 paths_bases_globais_list=[]
@@ -45,9 +42,12 @@ def logs_info(mensagem):
     now1 = datetime.datetime.now()
     year=str(now1.year)
     format0='%(asctime)s - %(message)s'
-    logging.basicConfig(filename='log'+year+'.txt',level=logging.INFO, format=format0,datefmt='%d/%m/%y %I:%M:%S %p')
+    logging.basicConfig(filename='log'+year+'.txt',level=logging.DEBUG, format=format0,datefmt='%d/%m/%y %I:%M:%S %p')
     logging.info(mensagem)
 
+def logs_bug(variavel,mensagem):
+    
+    logging.debug('debug '+variavel+': '+mensagem)
 
 def date2doy(date):
     """Convert date to day of year, return int doy.
@@ -144,14 +144,17 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
     print('\nConectado em ftp://geoftp.ibge.gov.br \n')
     ftp.cwd(str(dir_cwd))
     i=0
+    i=0
     for p in file_target:
         p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
         print('Downloading file '+file_target[i]+' para '+str(paths_bases_globais_list[i]))
         ftp.retrbinary("RETR " + file_target[i], p.write)
         print('Download file '+file_target[i]+' sucess\n')
         logs_info('Download file '+file_target[i]+' sucess')
+        logs_bug('file_target[i]',file_target[i])
         i=i+1
     print(file_target)
+    
     ftp.quit()
 
 def paths_bases_globais(path_root,folderYear):
@@ -194,7 +197,6 @@ def conversao_dia(dia,mes,ano):
     
     
 def rotina(day):
-     
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
@@ -228,7 +230,6 @@ def rotina(day):
                 print('Erro de extração de dados, FileNotFoundError')     
     i=i+1
     del paths_bases_globais_list
-    
     del folderYear
     del id_target
     del file_target
@@ -237,6 +238,7 @@ def rotina(day):
     
     
 # ----------------------------------------------------main ---------------------------------------------------------#
+
 
 r=False
 a1=True
