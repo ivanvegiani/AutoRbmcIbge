@@ -6,7 +6,7 @@
 """
 version:1.0
 author: Jose Ivan Silva Vegiani
-Automacao de download e deploy de dados do rbmc (Ibge)
+Automacao de download e deploy de dados do rbmc (IBGE)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
 Script de código aberto e livre, cedido gratuitamente pelo autor.
 Parâmetros para download:
