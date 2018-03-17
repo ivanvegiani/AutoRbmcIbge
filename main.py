@@ -144,7 +144,6 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
     print('\nConectado em ftp://geoftp.ibge.gov.br \n')
     ftp.cwd(str(dir_cwd))
     i=0
-    i=0
     for p in file_target:
         p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
         print('Downloading file '+file_target[i]+' para '+str(paths_bases_globais_list[i]))
