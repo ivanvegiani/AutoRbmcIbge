@@ -37,17 +37,21 @@ id_target=''
 file_target=[]
 path_root='c:\IBGE'
 today_gnss=0
+day=0
+
+now1 = datetime.datetime.now()
+year=str(now1.year)
+format0='%(asctime)s - %(message)s'
+logging.basicConfig(filename='log'+year+'.txt',level=logging.DEBUG, format=format0,datefmt='%d/%m/%y %I:%M:%S %p')
+
 
 def logs_info(mensagem):
-    now1 = datetime.datetime.now()
-    year=str(now1.year)
-    format0='%(asctime)s - %(message)s'
-    logging.basicConfig(filename='log'+year+'.txt',level=logging.DEBUG, format=format0,datefmt='%d/%m/%y %I:%M:%S %p')
+   
     logging.info(mensagem)
-
-def logs_bug(variavel,mensagem):
     
-    logging.debug('debug '+variavel+': '+mensagem)
+def logs_bug(nome_variavel,variavel):  
+    
+    logging.debug('debug '+nome_variavel+': '+variavel)
 
 def date2doy(date):
     """Convert date to day of year, return int doy.
@@ -64,7 +68,9 @@ def folderYearFunction(day_delay):
 
     now = datetime.datetime.now()
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
+    logs_bug('today_gnss',str(today_gnss))
     day_target=today_gnss-day_delay
+    
     if  day_target <= 0  :
         folderYear =str(int(now.year)-1)
     else:
@@ -192,10 +198,11 @@ def dia_de_hoje():
 def conversao_dia(dia,mes,ano):
     var=datetime.date(ano,mes,dia)
     alvo=int(date2doy(datetime.date(var.year,var.month,var.day)))
+    logs_bug('alvo',str(alvo))
     return alvo
+
     
-    
-def rotina(day):
+def rotina_auto(day):
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
@@ -233,40 +240,85 @@ def rotina(day):
     del id_target
     del file_target
     
+    
+def rotina_manual():
+    pass
  
     
     
-# ----------------------------------------------------main ---------------------------------------------------------#
+# ----------------------------------------------------fluxo principal ---------------------------------------------------------#
 
 
 r=False
-a1=True
-while a1:
-    print('Deseja escolher alguma data específica para baixar a base?')
+l1=True
+while l1:
+    print('Deseja escolher alguma data específica para baixar a base? (30)segundos para responder')
     print('digite "yes" para escolher uma data')
     print('digite "no" para deixar baixar automaticamente')
     resp=input()
     if resp == 'yes':
         r=True
-        a1=False
+        l1=False
     elif resp =='no':
         r=False
-        a1=False
+        l1=False
     else:
-        print('Favor inserir uma resposta válida')
-        a1=True
+        print('Favor inserir uma resposta válida yes ou no')
+        l1=True
+r=True
+
 if r:
-    dia=int(input('Qual dia?\n'))
-    mes=int(input('Qual mês?\n'))
-    ano=int(input('Qual ano\n'))
+    l5=True
+    while l5:
+        l2=True
+        while l2:
+            try:
+                dia=int(input('Qual dia?\n'))
+                if dia >31 or dia<=0:
+                    print('favor inserir valor entre 1 a 31')
+                    raise ValueError   
+                l2=False
+            except ValueError: 
+                print('Favor inserir apenas número correspondendo ao dia da base a ser baixada')
+                l2=True
+        l3=True
+        while l3:        
+            try:
+                mes=int(input('Qual mês?\n'))
+                if mes >12 or mes<=0:
+                    print('favor inserir valor entre 1 a 12')
+                    raise ValueError
+                l3=False
+            except ValueError: 
+                print('Favor inserir apenas número correspondendo o mês')
+                l3=True
+        l4=True
+        while l4:        
+            try:
+                ano=int(input('Qual ano\n'))
+                if ano<2015 or ano>now1.year :
+                    print('favor inserir valor entre 2015 a ',now1.year)
+                    raise ValueError  
+                l4=False
+            except ValueError:
+                print('Favor inserir apenas número correspondendo o ano')
+                l4=True       
+        try:
+            alvo=conversao_dia(dia,mes,ano)
+            l5=False
+        except ValueError: 
+            print('Data não existente, favor digitar uma data existente')
+            l5=True
+    folderYear=str(ano)
+    
 else:
     pass
 
 aa=True
 day=0
 bb=0
-while aa and bb<=30: # variável bb determina quantos arquivos para trás podem ser baixados
+while aa and bb<=5: # variável bb determina quantos arquivos para trás podem ser baixados
     day=day+1
     bb=bb+1 #evita loop infinito, caso o site esteja off-line
-    rotina(day)
+    rotina_auto(day)
     
