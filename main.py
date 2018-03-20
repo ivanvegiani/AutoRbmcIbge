@@ -180,7 +180,6 @@ def extracts(paths_extracts,paths_bases_globais_list,file_target):
         j=j+1
     i=0
     for z in range(4):
-        print(paths_extracts)
         print('Extraindo para '+str(paths_extracts[i]))
         zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
         zip1.extractall(str(paths_extracts[i]))
@@ -189,7 +188,6 @@ def extracts(paths_extracts,paths_bases_globais_list,file_target):
     i=0
     zip1.close()
     
-    print(paths_extracts)
 def dia_de_hoje():
     now = datetime.datetime.now()
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
@@ -213,8 +211,9 @@ def rotina_auto(day):
     id_target=id_target_function(day)
     file_target=names_File_Target(id_target)
     paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
-    i=0
-    for exist in paths_bases_globais_list:
+    i=-1
+    for exist in range(4):
+        i=i+1
         if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
             try:
                 download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target)
@@ -233,17 +232,58 @@ def rotina_auto(day):
                 logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
             except zipfile.BadZipFile:
                 logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
-                print('Erro de extração de dados, FileNotFoundError')     
-    i=i+1
+                print('Erro de extração de dados, FileNotFoundError')
+        msn='Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i])
+        print(msn)
+        logs_info(msn)
+    
+    
     del paths_bases_globais_list
     del folderYear
     del id_target
     del file_target
     
     
-def rotina_manual():
-    pass
- 
+def rotina_manual(dia,mes,ano):
+    
+    paths_bases_globais_list=[]
+    paths_extracts=[]
+    folderYear=''
+    id_target=''
+    file_target=[]
+    folderYear=str(ano)
+    local_Bases_Folders(path_root,folderYear)
+    id_target=str(conversao_dia(dia,mes,ano))
+    file_target=names_File_Target(id_target)
+    paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
+    i=-1
+    for exist in paths_bases_globais_list:
+        i=i+1
+        if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
+            try:
+                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target)
+            except gaierror:
+                print('Sem conexão com o servidor ftp://geoftp.ibge.gov.br')
+                logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
+            except ftplib.error_perm:
+                logs_info('Arquivo '+file_target[i]+' não encontrado')
+                print('Arquivo '+file_target[i]+' não encontrado')
+                aa=True
+            try:
+                extracts(paths_extracts,paths_bases_globais_list,file_target)
+                paths_extracts.clear()
+            except FileNotFoundError:
+                print('Erro de extração de dados, FileNotFoundError')
+                logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+            except zipfile.BadZipFile:
+                logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+                print('Erro de extração de dados, FileNotFoundError')    
+        print('Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i]))
+    
+    del paths_bases_globais_list
+    del folderYear
+    del id_target
+    del file_target
     
     
 # ----------------------------------------------------fluxo principal ---------------------------------------------------------#
@@ -265,7 +305,6 @@ while l1:
     else:
         print('Favor inserir uma resposta válida yes ou no')
         l1=True
-r=True
 
 if r:
     l5=True
@@ -309,7 +348,7 @@ if r:
         except ValueError: 
             print('Data não existente, favor digitar uma data existente')
             l5=True
-    folderYear=str(ano)
+    rotina_manual(dia,mes,ano)
     
 else:
     pass
@@ -317,7 +356,7 @@ else:
 aa=True
 day=0
 bb=0
-while aa and bb<=5: # variável bb determina quantos arquivos para trás podem ser baixados
+while aa and bb<=5 and not r: # variável bb determina quantos arquivos para trás podem ser baixados em modo automático
     day=day+1
     bb=bb+1 #evita loop infinito, caso o site esteja off-line
     rotina_auto(day)
