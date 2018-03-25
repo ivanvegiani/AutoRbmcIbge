@@ -29,24 +29,25 @@ import threading
 import sys
 import schedule
 from sys import exit
+import signal
 
 
 # variaveis globais
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
+
 paths_bases_globais_list=[]
 paths_extracts=[]
-folderYear=''
 id_target=''
 file_target=[]
 path_root='c:\IBGE'
 today_gnss=0
 day=0
 a1=False
+global check
+check=0
+folderYear=0
 
-global c1
-
-
-# instanciando o tempo 
+# instanciando o tempo
 now1 = datetime.datetime.now()
 year=str(now1.year)
 # configurando métodos dos logs
@@ -55,15 +56,15 @@ logging.basicConfig(filename='log'+year+'.txt',level=logging.DEBUG, format=forma
 
 
 def logs_info(mensagem): #log de informação
-   
+
     logging.info(mensagem)
-    
+
 def logs_bug(nome_variavel,variavel):  # log para debug, utilizado somente em desenvolvimento
-    
+
     logging.debug('debug '+nome_variavel+': '+variavel)
 
 def date2doy(date): # biblioteca de terceiros, https://github.com/purpleskyfall/gnsscal
-    
+
     """Convert date to day of year, return int doy.
     Example:
     >>> from datetime import date
@@ -81,18 +82,17 @@ def folder_year_function(day_delay): # define a pasta local relativo ao ano
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
     logs_bug('today_gnss',str(today_gnss))
     day_target=today_gnss-day_delay
-    
+
     if  day_target <= 0  :
         folderYear =str(int(now.year)-1)
     else:
         folderYear =str(now.year)
-
     return folderYear
 
 def bissexto(folderYear): # verificação para ver se o ano é bissexto
     """ retorno booleano verdadeiro se o ano é bissexto"""
-
-    if int(folderYear) % 100 != 0 and int(folderYear) % 4 == 0 or int(folderYear) % 400 == 0:
+    year=int(folderYear)
+    if (year % 100) != 0 and (year % 4) == 0 or (year % 400) == 0:
         return True
     else:
         return False
@@ -173,8 +173,6 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
         logs_info('Download file '+file_target[i]+' sucess')
         logs_bug('file_target[i]',file_target[i])
         i=i+1
-    print(file_target)
-    
     ftp.quit()
 
 def paths_bases_globais(path_root,folderYear,prin=True):# define os endereços locais absolutos
@@ -203,7 +201,7 @@ def extracts(paths_extracts,paths_bases_globais_list,file_target,prin=True): # d
         i=i+1
     i=0
     zip1.close()
-    
+
 def dia_de_hoje(): # retorna o dia atual em gnss calendar
     now = datetime.datetime.now()
     today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
@@ -215,62 +213,113 @@ def conversao_dia(dia,mes,ano): # converte variáveis dia, mes e ano para gnss c
     logs_bug('alvo',str(alvo))
     return alvo
 
+def deploy_folders(day):
+    paths_bases_globais_list=[]
+    paths_extracts=[]
+    folderYear=''
+    id_target=''
+    file_target=[]
+    folderYear=folder_year_function(day)
+    local_bases_folders(path_root,folderYear)
+    id_target=id_target_function(day)
+    file_target=names_file_target(id_target)
+    paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
 
-    
-def rotina_auto(loop=31,prin=True): # rotina principal automatica
+def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automatica
+    day=0
+    paths_bases_globais_list=[]
+    paths_extracts=[]
+    folderYear=''
+    id_target=''
+    file_target=[]
+    folderYear=folder_year_function(day)
+    local_bases_folders(path_root,folderYear)
+    id_target=id_target_function(day)
+    file_target=names_file_target(id_target)
+    paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
+    if only_check:
+        control=True
+        soma_files=0
+
     if prin:
         print('Entrando em modo automático')
-    day=0
-    for a1 in range(loop): # variável bb determina quantos arquivos para trás podem ser baixados em modo automático
-        day=day+1
-        paths_bases_globais_list=[]
-        paths_extracts=[]
-        folderYear=''
-        id_target=''
-        file_target=[]
-        folderYear=folder_year_function(day)
-        local_bases_folders(path_root,folderYear)
-        id_target=id_target_function(day)
-        file_target=names_file_target(id_target)
-        paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
+        time.sleep(3)
+
+    if only_check:
         i=-1
-        for exist in range(4):
+        list_file=[]
+
+        for b1 in baseFolder:
             i=i+1
-            if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
-                try:
-                    download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target)
-                except gaierror:
+            list_dir=(os.path.join(paths_bases_globais_list[i]))
+            list_dir_file=os.listdir(list_dir)
+            number_files = len(list_dir_file)
+            soma_files=number_files+soma_files
+
+    else:
+        for a1 in range(loop): # variável bb determina quantos arquivos para trás podem ser baixados em modo automático
+            paths_bases_globais_list=[]
+            paths_extracts=[]
+            folderYear=''
+            id_target=''
+            file_target=[]
+            folderYear=folder_year_function(day)
+            local_bases_folders(path_root,folderYear)
+            id_target=id_target_function(day)
+            file_target=names_file_target(id_target)
+            paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
+            i=-1
+            for exist in range(4):
+                i=i+1
+                if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
+                    if not only_check:
+                        try:
+                            if prin:
+                                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target)
+                                extracts(paths_extracts,paths_bases_globais_list,file_target)
+                            else:
+                                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target,prin=False)
+                                extracts(paths_extracts,paths_bases_globais_list,file_target,prin=False)
+                                paths_extracts.clear()
+                        except gaierror:
+                            if prin:
+                                print('Sem conexão com o servidor ftp://geoftp.ibge.gov.br')
+                            logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
+                        except ftplib.error_perm:
+                            logs_info('Arquivo '+file_target[i]+' não encontrado')
+                            if prin:
+                                print('Arquivo '+file_target[i]+' não encontrado')
+                        # try:
+                        #     if prin:
+                        #         extracts(paths_extracts,paths_bases_globais_list,file_target)
+                        #     else:
+                        #         extracts(paths_extracts,paths_bases_globais_list,file_target,prin=False)
+
+                        except FileNotFoundError:
+                            if prin:
+                                print('Erro de extração de dados, FileNotFoundError')
+                            logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+                        except zipfile.BadZipFile:
+                            logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+                            if prin:
+                                print('Erro de extração de dados, FileNotFoundError')
+                else:
                     if prin:
-                        print('Sem conexão com o servidor ftp://geoftp.ibge.gov.br')
-                    logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
-                except ftplib.error_perm:
-                    logs_info('Arquivo '+file_target[i]+' não encontrado')
-                    if prin:
-                        print('Arquivo '+file_target[i]+' não encontrado')
-                    
-                try:
-                    extracts(paths_extracts,paths_bases_globais_list,file_target)
-                    paths_extracts.clear()
-                except FileNotFoundError:
-                    if prin:
-                        print('Erro de extração de dados, FileNotFoundError')
-                    logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
-                except zipfile.BadZipFile:
-                    logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
-                    if prin:
-                        print('Erro de extração de dados, FileNotFoundError')
-            msn='Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i])
-            if prin:
-                print(msn)
-            logs_info(msn)
-   
+                        print('Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i]))
+                logs_info('Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i]))
+            day=day+1
+
     del paths_bases_globais_list
     del folderYear
     del id_target
     del file_target
-   
+
+    if  only_check:
+        return (soma_files-4) # subtraindo as 4 pastas extracts, para não aparecer na contagem
+    else:
+        pass
+
 def rotina_manual(dia,mes,ano): # rotina principal manual
-    
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
@@ -282,8 +331,9 @@ def rotina_manual(dia,mes,ano): # rotina principal manual
     file_target=names_file_target(id_target)
     paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
     i=-1
-    for exist in paths_bases_globais_list:
+    for exist in range(4):
         i=i+1
+        logs_bug('paths_bases_globais_list[i]',str(paths_bases_globais_list[i]))
         if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
             try:
                 download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target)
@@ -292,7 +342,7 @@ def rotina_manual(dia,mes,ano): # rotina principal manual
                 logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
             except ftplib.error_perm:
                 logs_info('Arquivo '+file_target[i]+' não encontrado')
-                print('Arquivo '+file_target[i]+' não encontrado')            
+                print('Arquivo '+file_target[i]+' não encontrado')
             try:
                 extracts(paths_extracts,paths_bases_globais_list,file_target)
                 paths_extracts.clear()
@@ -301,112 +351,113 @@ def rotina_manual(dia,mes,ano): # rotina principal manual
                 logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
             except zipfile.BadZipFile:
                 logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
-                print('Erro de extração de dados, FileNotFoundError')    
+                print('Erro de extração de dados, FileNotFoundError')
         print('Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i]))
-    
     del paths_bases_globais_list
     del folderYear
     del id_target
     del file_target
-    
-  
-
-def thread1(name,r):  
-    rotina_auto(prin=False)
-    
-def thread2(name,r):  
-   schedule.every().day.at("00:15").do(rotina_auto)
-   while True:
-    schedule.run_pending()
-    time.sleep(1*60)
-    
-# ----------------------------------------------------fluxo principal ---------------------------------------------------------#
 
 
-t1 = threading.Thread(target=thread1, args=('task1','none'))
-t1.daemon=True
-print('Olá, a primeira a execução vamos fazer download automatico das 31 primeiras bases')
-time.sleep(6)
-print('As bases serão baixadas e descompactadas automaticamente em C:\IBGE')
-time.sleep(6)
-print('Por favor aguarde enquanto estamos baixando as bases')
-    # if ...:
-        
-    # else:
-    # print('verificamos que já há bases existente no seu local')
-time.sleep(6)
-t1.start()
-l1=True
-t1.join()
-print('próximo download agendado para às 23:00')
-time.sleep(6)
-t2 = threading.Thread(target=thread2, args=('task2','none'))
-t2.daemon=True
-t2.start()
-l1=True
-while l1:
-    print('digite "y" para escolher uma data para download avulso')
-    print('digite "n" para finalizar e cancelar o download agendado')
-    print('deixe a aplicação minimizada para efetuar o download agendado')
-    resp=input()
-    if resp == 'y':
-        l1=True
-        r=True
-        l1=False
-    elif resp =='n':
-        r=False
-        l1=False
-        print('Saindo da aplicação, download agendado cancelado')
-        time.sleep(4)
-        break
-    else:
-        print('Favor inserir uma resposta válida yes ou no')
-        l1=True
-if r:
-    l5=True
-    while l5:
-        l2=True
-        while l2:
-            try:
-                dia=int(input('Qual dia?\n'))
-                if dia >31 or dia<=0:
-                    print('favor inserir valor entre 1 a 31')
-                    raise ValueError   
-                l2=False
-            except ValueError: 
-                print('Favor inserir apenas número correspondendo ao dia da base a ser baixada')
+
+
+# def thread1(name,th1):
+#     t1.end_tread=False
+#     time.sleep(15)
+#     rotina_auto(prin=False)
+#     t1.end_tread=True
+
+
+# def thread2(name,th2):
+#    schedule.every().day.at(th2).do(rotina_auto)
+#    while True:
+#     schedule.run_pending()
+#     time.sleep(1*60)
+
+def thread3(name,th3):
+    check=rotina_auto(prin=False,only_check=True)
+    t3.check=check
+
+def interacao_user():
+    l2=True
+    while l2:
+        try:
+            dia=int(input('Qual dia?\n'))
+            if dia >31 or dia<=0:
+                print('favor inserir valor entre 1 a 31')
                 l2=True
+                raise ValueError
+            l2=False
+        except ValueError:
+            print('Favor inserir apenas número correspondendo ao dia da base a ser baixada')
+            l2=True
             l3=True
-        while l3:        
-            try:
-                mes=int(input('Qual mês?\n'))
-                if mes >12 or mes<=0:
-                    print('favor inserir valor entre 1 a 12')
-                    raise ValueError
-                l3=False
-            except ValueError: 
-                print('Favor inserir apenas número correspondendo o mês')
-                l3=True
+            while l3:
+                try:
+                    mes=int(input('Qual mês?\n'))
+                    if mes >12 or mes<=0:
+                        print('favor inserir valor entre 1 a 12')
+                        raise ValueError
+                    l3=False
+                except ValueError:
+                    print('Favor inserir apenas número correspondendo o mês')
+                    l3=True
         l4=True
-        while l4:        
-            try:
-                ano=int(input('Qual ano\n'))
-                if ano<2015 or ano>now1.year :
-                    print('favor inserir valor entre 2015 a ',now1.year)
-                    raise ValueError  
-                l4=False
-            except ValueError:
-                print('Favor inserir apenas número correspondendo o ano')
-                l4=True       
-            try:
-                alvo=conversao_dia(dia,mes,ano)
-                l5=False
-            except ValueError: 
-                print('Data não existente, favor digitar uma data existente')
-                l5=True
-    rotina_manual(dia,mes,ano)
-else:
-    pass
-        
-        
- 
+        while l4:
+                try:
+                    ano=int(input('Qual ano\n'))
+                    if ano<2015 or ano>now1.year :
+                        print('favor inserir valor entre 2015 a ',now1.year)
+                        raise ValueError
+                        l4=False
+                except ValueError:
+                    print('Favor inserir apenas número correspondendo ao ano')
+                    l4=True
+                try:
+                    alvo=conversao_dia(dia,mes,ano)
+                    rotina_manual(dia,mes,ano)
+                except ValueError:
+                    print('Data não existente, favor digitar uma data existente')
+                    l2=True
+
+def timed_input(timeout):
+
+    t = Timer(timeout, print, ['Sorry, times up'])
+    t.start()
+    prompt = "You have %d seconds to choose the correct answer...\n" % timeout
+    answer = input(prompt)
+
+    if answer:
+        t.cancel()
+        interacao_user()
+    else:
+        print('Aplicação sendo finalizada')
+        time.sleep(2)
+
+
+
+
+
+
+# ----------------------------------------------------fluxo principal ---------------------------------------------------------#
+# Primeira etapa --------------------------------------------------------------------------------------------------------------#
+# t1 = threading.Thread(target=thread1, args=('task1','none')) # verifica e baixa até 31 arquivos de bases dos dias anteriores
+# t2 = threading.Thread(target=thread2, args=('task2','22:30')) # agenda para baixar automaticamente todos os dias às 23:30
+t3 = threading.Thread(target=thread3, args=('task13','none')) # verifica quantos arquivos de base há no em local
+t3.start()
+print('As bases por este programa, serão baixadas e descompactadas automaticamente em C:\IBGE\n')
+time.sleep(3)
+print('Aguarde enquanto faremos algumas verificações')
+time.sleep(1)
+t3.join()
+print('Foi verificado que há ao todo há %d arquivos de bases em C:\IBGE'%t3.check)
+time.sleep(2)
+print('Verificando se há arquivos recentes no servidor do IBGE para serem baixados')
+time.sleep(3)
+rotina_auto(loop=31,prin=True,only_check=False)
+print('Foi verificado e atualizado os arquivos recentes com sucesso')
+
+# Segunta etapa --------------------------------------------------------------------------------------------------------------#
+time.sleep(5)
+print('\nDigite qualquer coisa para entrar em modo manual, e baixar uma base que você quiser\n')
+print('Em 60 segundos de ociosiadade a aplicação irá se auto desligar')
