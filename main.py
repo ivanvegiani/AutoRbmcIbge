@@ -43,8 +43,6 @@ path_root='c:\IBGE'
 today_gnss=0
 day=0
 a1=False
-global check
-check=0
 folderYear=0
 
 # instanciando o tempo
@@ -213,7 +211,7 @@ def conversao_dia(dia,mes,ano): # converte variáveis dia, mes e ano para gnss c
     logs_bug('alvo',str(alvo))
     return alvo
 
-def deploy_folders(day):
+def deploy_folders(return1,day):
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
@@ -224,6 +222,14 @@ def deploy_folders(day):
     id_target=id_target_function(day)
     file_target=names_file_target(id_target)
     paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
+    if return1=='id_target':
+        return id_target
+    if return1=='file_target':
+        return file_target
+    if return1=='paths_bases_globais_list':
+        return paths_bases_globais_list
+    
+    
 
 def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automatica
     day=0
@@ -270,6 +276,7 @@ def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automati
             paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
             i=-1
             for exist in range(4):
+                
                 i=i+1
                 if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
                     if not only_check:
@@ -303,12 +310,12 @@ def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automati
                             logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
                             if prin:
                                 print('Erro de extração de dados, FileNotFoundError')
-                else:
-                    if prin:
-                        print('Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i]))
-                logs_info('Arquivo da base '+file_target[i]+' já existente em '+str(paths_bases_globais_list[i]))
+                else:   
+                     pass          
+                logs_info('Arquivo da base '+file_target[i]+' existente em: '+str(paths_bases_globais_list[i]))
+            
             day=day+1
-
+            
     del paths_bases_globais_list
     del folderYear
     del id_target
@@ -434,11 +441,26 @@ def timed_input(timeout):
         print('Aplicação sendo finalizada')
         time.sleep(2)
 
-
-
-
-
-
+def show_files():
+        print('\nExibindo arquivos contidos em C:\IBGE:\n')
+        time.sleep(3)
+        path=[]
+        paths_bases_globais_list=[]
+        folderYear=''
+        id_target=''
+        file_target=[]
+        folderYear=folder_year_function(day)
+        local_bases_folders(path_root,folderYear)
+        id_target=id_target_function(day)
+        file_target=names_file_target(id_target)
+        paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
+        i=-1
+        for ai in range(4):
+            i=i+1  
+            path.append(paths_bases_globais_list[i])
+            print('Arquivos contidos em: '+baseFolder[i]+str(os.listdir(path[i])))
+            logs_info('Arquivos contidos em: '+baseFolder[i]+str(os.listdir(path[i])))
+   
 # ----------------------------------------------------fluxo principal ---------------------------------------------------------#
 # Primeira etapa --------------------------------------------------------------------------------------------------------------#
 # t1 = threading.Thread(target=thread1, args=('task1','none')) # verifica e baixa até 31 arquivos de bases dos dias anteriores
@@ -450,12 +472,13 @@ time.sleep(3)
 print('Aguarde enquanto faremos algumas verificações')
 time.sleep(1)
 t3.join()
-print('Foi verificado que há ao todo há %d arquivos de bases em C:\IBGE'%t3.check)
+print('\nFoi verificado que há ao todo há %d arquivos de bases em C:\IBGE\nx '%t3.check)
 time.sleep(2)
 print('Verificando se há arquivos recentes no servidor do IBGE para serem baixados')
 time.sleep(3)
 rotina_auto(loop=31,prin=True,only_check=False)
 print('Foi verificado e atualizado os arquivos recentes com sucesso')
+show_files()
 
 # Segunta etapa --------------------------------------------------------------------------------------------------------------#
 time.sleep(5)
