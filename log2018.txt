@@ -1,0 +1,166 @@
+25/03/18 11:17:05 AM - debug today_gnss: 84
+25/03/18 11:17:14 AM - debug today_gnss: 84
+25/03/18 11:17:17 AM - debug today_gnss: 84
+25/03/18 11:17:21 AM - Arquivo prcv0841.zip não encontrado
+25/03/18 11:17:21 AM - Arquivo da base prcv0841.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:29 AM - Arquivo prma0841.zip não encontrado
+25/03/18 11:17:29 AM - Arquivo da base prma0841.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:29 AM - Arquivo ufpr0841.zip não encontrado
+25/03/18 11:17:29 AM - Arquivo da base ufpr0841.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo prgu0841.zip não encontrado
+25/03/18 11:17:30 AM - Arquivo da base prgu0841.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0831.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0831.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0831.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0831.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0821.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0821.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0821.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0821.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0811.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0811.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0811.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0811.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0801.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0801.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0801.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0801.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0791.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0791.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0791.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0791.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0781.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0781.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0781.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0781.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0771.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0771.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0771.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0771.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0761.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0761.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0761.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0761.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0751.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0751.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0751.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0751.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0741.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0741.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0741.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0741.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0731.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0731.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0731.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0731.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0721.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0721.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0721.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0721.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0711.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0711.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0711.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0711.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0701.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0701.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0701.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0701.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0691.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0691.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0691.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0691.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0681.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0681.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0681.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0681.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0671.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0671.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0671.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0671.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0661.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0661.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0661.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0661.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0651.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0651.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0651.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0651.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0641.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0641.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0641.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0641.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0631.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0631.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0631.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0631.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0621.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0621.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0621.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0621.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0611.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0611.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0611.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0611.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0601.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0601.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0601.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0601.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0591.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0591.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0591.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0591.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0581.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0581.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0581.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0581.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0571.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0571.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0571.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0571.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0561.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0561.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0561.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0561.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0551.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0551.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0551.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0551.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:30 AM - debug today_gnss: 84
+25/03/18 11:17:30 AM - Arquivo da base prcv0541.zip existente em: C:\IBGE\2018\Cascavel
+25/03/18 11:17:30 AM - Arquivo da base prma0541.zip existente em: C:\IBGE\2018\Maringá
+25/03/18 11:17:30 AM - Arquivo da base ufpr0541.zip existente em: C:\IBGE\2018\Curitiba
+25/03/18 11:17:30 AM - Arquivo da base prgu0541.zip existente em: C:\IBGE\2018\Guarapuava
+25/03/18 11:17:33 AM - debug today_gnss: 84
+25/03/18 11:17:33 AM - Arquivos contidos em: Cascavel['extracts', 'prcv0361.zip', 'prcv0401.zip', 'prcv0441.zip', 'prcv0481.zip', 'prcv0521.zip', 'prcv0531.zip', 'prcv0541.zip', 'prcv0551.zip', 'prcv0561.zip', 'prcv0571.zip', 'prcv0581.zip', 'prcv0591.zip', 'prcv0601.zip', 'prcv0611.zip', 'prcv0621.zip', 'prcv0631.zip', 'prcv0641.zip', 'prcv0651.zip', 'prcv0661.zip', 'prcv0671.zip', 'prcv0681.zip', 'prcv0691.zip', 'prcv0701.zip', 'prcv0711.zip', 'prcv0721.zip', 'prcv0731.zip', 'prcv0741.zip', 'prcv0751.zip', 'prcv0761.zip', 'prcv0771.zip', 'prcv0781.zip', 'prcv0791.zip', 'prcv0801.zip', 'prcv0811.zip', 'prcv0821.zip', 'prcv0831.zip']
+25/03/18 11:17:33 AM - Arquivos contidos em: Maringá['extracts', 'prma0361.zip', 'prma0401.zip', 'prma0441.zip', 'prma0481.zip', 'prma0521.zip', 'prma0531.zip', 'prma0541.zip', 'prma0551.zip', 'prma0561.zip', 'prma0571.zip', 'prma0581.zip', 'prma0591.zip', 'prma0601.zip', 'prma0611.zip', 'prma0621.zip', 'prma0631.zip', 'prma0641.zip', 'prma0651.zip', 'prma0661.zip', 'prma0671.zip', 'prma0681.zip', 'prma0691.zip', 'prma0701.zip', 'prma0711.zip', 'prma0721.zip', 'prma0731.zip', 'prma0741.zip', 'prma0751.zip', 'prma0761.zip', 'prma0771.zip', 'prma0781.zip', 'prma0791.zip', 'prma0801.zip', 'prma0811.zip', 'prma0821.zip', 'prma0831.zip']
+25/03/18 11:17:33 AM - Arquivos contidos em: Curitiba['extracts', 'ufpr0361.zip', 'ufpr0401.zip', 'ufpr0441.zip', 'ufpr0481.zip', 'ufpr0521.zip', 'ufpr0531.zip', 'ufpr0541.zip', 'ufpr0551.zip', 'ufpr0561.zip', 'ufpr0571.zip', 'ufpr0581.zip', 'ufpr0591.zip', 'ufpr0601.zip', 'ufpr0611.zip', 'ufpr0621.zip', 'ufpr0631.zip', 'ufpr0641.zip', 'ufpr0651.zip', 'ufpr0661.zip', 'ufpr0671.zip', 'ufpr0681.zip', 'ufpr0691.zip', 'ufpr0701.zip', 'ufpr0711.zip', 'ufpr0721.zip', 'ufpr0731.zip', 'ufpr0741.zip', 'ufpr0751.zip', 'ufpr0761.zip', 'ufpr0771.zip', 'ufpr0781.zip', 'ufpr0791.zip', 'ufpr0801.zip', 'ufpr0811.zip', 'ufpr0821.zip', 'ufpr0831.zip']
+25/03/18 11:17:33 AM - Arquivos contidos em: Guarapuava['extracts', 'prgu0401.zip', 'prgu0441.zip', 'prgu0481.zip', 'prgu0521.zip', 'prgu0531.zip', 'prgu0541.zip', 'prgu0551.zip', 'prgu0561.zip', 'prgu0571.zip', 'prgu0581.zip', 'prgu0591.zip', 'prgu0601.zip', 'prgu0611.zip', 'prgu0621.zip', 'prgu0631.zip', 'prgu0641.zip', 'prgu0651.zip', 'prgu0661.zip', 'prgu0671.zip', 'prgu0681.zip', 'prgu0691.zip', 'prgu0701.zip', 'prgu0711.zip', 'prgu0721.zip', 'prgu0731.zip', 'prgu0741.zip', 'prgu0751.zip', 'prgu0761.zip', 'prgu0771.zip', 'prgu0781.zip', 'prgu0791.zip', 'prgu0801.zip', 'prgu0811.zip', 'prgu0821.zip', 'prgu0831.zip']
