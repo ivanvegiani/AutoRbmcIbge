@@ -31,7 +31,6 @@ import schedule
 from sys import exit
 import signal
 
-
 # variaveis globais
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
 
@@ -228,11 +227,14 @@ def deploy_folders(return1,day):
         return file_target
     if return1=='paths_bases_globais_list':
         return paths_bases_globais_list
-    
-    
 
-def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automatica
-    day=0
+
+
+def rotina_auto(loop=31,prin=True,only_check=False,day=0): # rotina principal automatica
+    if day!=0:
+        day=day
+    else:
+        day=0
     paths_bases_globais_list=[]
     paths_extracts=[]
     folderYear=''
@@ -276,7 +278,7 @@ def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automati
             paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
             i=-1
             for exist in range(4):
-                
+
                 i=i+1
                 if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
                     if not only_check:
@@ -310,12 +312,12 @@ def rotina_auto(loop=31,prin=True,only_check=False): # rotina principal automati
                             logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
                             if prin:
                                 print('Erro de extração de dados, FileNotFoundError')
-                else:   
-                     pass          
+                else:
+                     pass
                 logs_info('Arquivo da base '+file_target[i]+' existente em: '+str(paths_bases_globais_list[i]))
-            
+
             day=day+1
-            
+
     del paths_bases_globais_list
     del folderYear
     del id_target
@@ -364,16 +366,6 @@ def rotina_manual(dia,mes,ano): # rotina principal manual
     del folderYear
     del id_target
     del file_target
-
-
-
-
-# def thread1(name,th1):
-#     t1.end_tread=False
-#     time.sleep(15)
-#     rotina_auto(prin=False)
-#     t1.end_tread=True
-
 
 # def thread2(name,th2):
 #    schedule.every().day.at(th2).do(rotina_auto)
@@ -427,19 +419,6 @@ def interacao_user():
                     print('Data não existente, favor digitar uma data existente')
                     l2=True
 
-def timed_input(timeout):
-
-    t = Timer(timeout, print, ['Sorry, times up'])
-    t.start()
-    prompt = "You have %d seconds to choose the correct answer...\n" % timeout
-    answer = input(prompt)
-
-    if answer:
-        t.cancel()
-        interacao_user()
-    else:
-        print('Aplicação sendo finalizada')
-        time.sleep(2)
 
 def show_files():
         print('\nExibindo arquivos contidos em C:\IBGE:\n')
@@ -456,12 +435,27 @@ def show_files():
         paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
         i=-1
         for ai in range(4):
-            i=i+1  
+            i=i+1
             path.append(paths_bases_globais_list[i])
             print('Arquivos contidos em: '+baseFolder[i]+str(os.listdir(path[i])))
             logs_info('Arquivos contidos em: '+baseFolder[i]+str(os.listdir(path[i])))
-   
+
+
+def interrupted(signum, frame): # funciona apenas no linux
+#     "called when read times out"
+    print ('Aplicação finalizada')
+    sys.exit()
+
+def watchdog():
+  print('Aplicação finalizada')
+  # time.sleep(10)
+  os._exit(1)
+
 # ----------------------------------------------------fluxo principal ---------------------------------------------------------#
+
+
+def primeira_etapa():
+    pass
 # Primeira etapa --------------------------------------------------------------------------------------------------------------#
 # t1 = threading.Thread(target=thread1, args=('task1','none')) # verifica e baixa até 31 arquivos de bases dos dias anteriores
 # t2 = threading.Thread(target=thread2, args=('task2','22:30')) # agenda para baixar automaticamente todos os dias às 23:30
@@ -472,7 +466,7 @@ time.sleep(3)
 print('Aguarde enquanto faremos algumas verificações')
 time.sleep(1)
 t3.join()
-print('\nFoi verificado que há ao todo há %d arquivos de bases em C:\IBGE\nx '%t3.check)
+print('\nFoi verificado que há ao todo há %d arquivos de bases em C:\IBGE\n '%t3.check)
 time.sleep(2)
 print('Verificando se há arquivos recentes no servidor do IBGE para serem baixados')
 time.sleep(3)
@@ -480,7 +474,17 @@ rotina_auto(loop=31,prin=True,only_check=False)
 print('Foi verificado e atualizado os arquivos recentes com sucesso')
 show_files()
 
+
+def segunda_etapa():
+    pass
 # Segunta etapa --------------------------------------------------------------------------------------------------------------#
-time.sleep(5)
+
+delay_time = 60   # delay time in seconds
+alarm = threading.Timer(delay_time, watchdog)
+alarm.start()
 print('\nDigite qualquer coisa para entrar em modo manual, e baixar uma base que você quiser\n')
 print('Em 60 segundos de ociosiadade a aplicação irá se auto desligar')
+print('Digite enter para continuar e escolher uma base para download')
+input()
+alarm.cancel()# disable the alarm after success
+interacao_user()
