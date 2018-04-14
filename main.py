@@ -94,12 +94,15 @@ def bissexto(folderYear): # verificação para ver se o ano é bissexto
     else:
         return False
 
-def id_target_function(day_delay): # define o alvo
+def id_target_function(day_delay,delay=True): # define o alvo
     """ Retorna id_target (identificação do dia alvo)"""
-    now = datetime.datetime.now()
-    today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
-    day_target=today_gnss-day_delay
-
+    if delay:
+        now = datetime.datetime.now()
+        today_gnss=int(date2doy(datetime.date(now.year,now.month,now.day)))
+        day_target=today_gnss-day_delay
+    else:
+        day_target=day_delay
+   
 # definindo o id_target
     if day_target<100 and day_target>=10 and day_target>0:
         id_target="0"+str(day_target)
@@ -173,12 +176,19 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
     ftp.quit()
 
 def paths_bases_globais(path_root,folderYear,prin=True):# define os endereços locais absolutos
+    paths_bases_globais_list=[]
+    del paths_bases_globais_list[:]
     i=0
+    logs_bug("folderYear in rotina manual: ", folderYear)
     for p in baseFolder:
         paths_bases_globais0=os.path.join(path_root,folderYear,baseFolder[i])
+        logs_bug("paths_bases_globais0: ", paths_bases_globais0)
         p1 = Path(paths_bases_globais0)
+        logs_bug("objeto path: ", str(p1))
         paths_bases_globais_list.append(p1.resolve())
-        i=i+1
+        logs_bug("paths_bases_globais_list: ", str(paths_bases_globais_list[i]))
+        logs_bug("p1 resolve ", str(p1.resolve()))
+        i=i+1     
     return paths_bases_globais_list
 
 def extracts(paths_extracts,paths_bases_globais_list,file_target,prin=True): # define a descompactação do zip
@@ -330,13 +340,17 @@ def rotina_auto(loop=31,prin=True,only_check=False,day=0): # rotina principal au
 
 def rotina_manual(dia,mes,ano): # rotina principal manual
     paths_bases_globais_list=[]
+    del paths_bases_globais_list[:]
+    logs_bug(" del paths_bases_globais_list[:]",str(paths_bases_globais_list[:]))
     paths_extracts=[]
+    del paths_extracts[:]
     folderYear=''
     id_target=''
     file_target=[]
+    del file_target[:]
     folderYear=str(ano)
     local_bases_folders(path_root,folderYear)
-    id_target=str(conversao_dia(dia,mes,ano))
+    id_target=id_target_function((conversao_dia(dia,mes,ano)),delay=False)
     file_target=names_file_target(id_target)
     paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
     i=-1
@@ -378,6 +392,8 @@ def thread3(name,th3):
     t3.check=check
 
 def interacao_user():
+    print('Entrando em modo manual')
+    time.sleep(3)
     l2=True
     while l2:
         try:
@@ -386,38 +402,41 @@ def interacao_user():
                 print('favor inserir valor entre 1 a 31')
                 l2=True
                 raise ValueError
-            l2=False
+            else:
+                l2=False
         except ValueError:
             print('Favor inserir apenas número correspondendo ao dia da base a ser baixada')
             l2=True
+    l3=True
+    while l3:
+        try:
+            mes=int(input('Qual mês?\n'))
+            if mes >12 or mes<=0:
+                print('favor inserir um valor que corresponde ao mês entre 1 a 12')
+                raise ValueError
+            else:
+                l3=False
+        except ValueError:
+            print('Favor inserir apenas número correspondendo o mês')
             l3=True
-            while l3:
-                try:
-                    mes=int(input('Qual mês?\n'))
-                    if mes >12 or mes<=0:
-                        print('favor inserir valor entre 1 a 12')
-                        raise ValueError
-                    l3=False
-                except ValueError:
-                    print('Favor inserir apenas número correspondendo o mês')
-                    l3=True
-        l4=True
-        while l4:
-                try:
-                    ano=int(input('Qual ano\n'))
-                    if ano<2015 or ano>now1.year :
-                        print('favor inserir valor entre 2015 a ',now1.year)
-                        raise ValueError
-                        l4=False
-                except ValueError:
-                    print('Favor inserir apenas número correspondendo ao ano')
-                    l4=True
-                try:
-                    alvo=conversao_dia(dia,mes,ano)
-                    rotina_manual(dia,mes,ano)
-                except ValueError:
-                    print('Data não existente, favor digitar uma data existente')
-                    l2=True
+    l4=True
+    while l4:
+        try:
+            ano=int(input('Qual ano\n'))
+            if ano <2015 or ano>now1.year:
+                print('favor inserir valor entre 2015 a ',now1.year)
+                raise ValueError
+            else:
+                l4=False
+        except ValueError:
+            print('Favor inserir apenas número correspondendo ao ano')
+            l4=True
+        try:
+            #alvo=conversao_dia(dia,mes,ano)
+            rotina_manual(dia,mes,ano)
+        except ValueError:
+            print('Data não existente, favor digitar uma data existente')
+            interacao_user()
 
 
 def show_files():
@@ -477,6 +496,8 @@ show_files()
 
 def segunda_etapa():
     pass
+
+
 # Segunta etapa --------------------------------------------------------------------------------------------------------------#
 
 delay_time = 60   # delay time in seconds
