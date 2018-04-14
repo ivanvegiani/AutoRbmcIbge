@@ -437,8 +437,24 @@ def interacao_user():
         except ValueError:
             print('Data não existente, favor digitar uma data existente')
             interacao_user()
-
-
+    lf=True        
+    while lf:                
+        print('Deseja fazer download de mais uma base?')
+        resp0=input('y/n\n')
+        try:
+            if resp0=='y' or resp0=='n':
+                if resp0=='y':
+                    interacao_user()
+                else:
+                    lf=False
+                    print('Fim da aplicação')
+                    os._exit(1)
+                    
+            else:
+                raise ValueError
+        except ValueError:
+            print('Favor responda somente y para sim ou n para não')
+            
 def show_files():
         print('\nExibindo arquivos contidos em C:\IBGE:\n')
         time.sleep(3)
