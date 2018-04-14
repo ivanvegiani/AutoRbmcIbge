@@ -3,6 +3,7 @@
 # python 3
 # ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
 # implementado sob o paradigma procedural
+#
 
 """
 version:1.0
@@ -11,8 +12,7 @@ Automacao de download e descompactação de dados do rbmc (IBGE)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
 Script de código aberto e livre, cedido gratuitamente pelo autor.
 Parâmetros para download:
-Locais: Cascavel, Maringá, Curitiba e Guarapuava
-Referência de dia atual -1 em gnss calendar
+Estações: Cascavel, Maringá, Curitiba e Guarapuava
 """
 
 import os
@@ -33,15 +33,8 @@ import signal
 
 # variaveis globais
 baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
-
-paths_bases_globais_list=[]
-paths_extracts=[]
-id_target=''
-file_target=[]
 path_root='c:\IBGE'
-today_gnss=0
 day=0
-a1=False
 folderYear=0
 
 # instanciando o tempo
@@ -53,11 +46,9 @@ logging.basicConfig(filename='log'+year+'.txt',level=logging.DEBUG, format=forma
 
 
 def logs_info(mensagem): #log de informação
-
     logging.info(mensagem)
 
 def logs_bug(nome_variavel,variavel):  # log para debug, utilizado somente em desenvolvimento
-
     logging.debug('debug '+nome_variavel+': '+variavel)
 
 def date2doy(date): # biblioteca de terceiros, https://github.com/purpleskyfall/gnsscal
@@ -162,17 +153,30 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
         print (str(dir_cwd))
         print('\nConectado em ftp://geoftp.ibge.gov.br \n')
     ftp.cwd(str(dir_cwd))
-    i=0
+    i=-1
     for p in file_target:
+        i=i+1
+        logs_bug("In download: file target",str(file_target[i]))
+        logs_bug("In download: file target list",str(file_target))
+        logs_bug("In download: path_global_list ",str(paths_bases_globais_list[i]))
         p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
         if prin:
             print('Downloading file '+file_target[i]+' para '+str(paths_bases_globais_list[i]))
-        ftp.retrbinary("RETR " + file_target[i], p.write)
-        if prin:
-            print('Download file '+file_target[i]+' sucess\n')
+        try:    
+            ftp.retrbinary("RETR " + file_target[i], p.write)
+            p.close()
+            if prin:
+                print('Download file '+file_target[i]+' sucess\n')
+        except ftplib.error_perm:
+            if prin:
+                print('Arquivo '+file_target[i]+' não encontrado no servidor\n')
+                logs_info('Arquivo '+file_target[i]+' não encontrado no servidor\n')
+            p.close()
+            os.remove(os.path.join(paths_bases_globais_list[i],file_target[i]))
+            logs_bug("remove: path ",str(paths_bases_globais_list[i]))
+        
         logs_info('Download file '+file_target[i]+' sucess')
-        logs_bug('file_target[i]',file_target[i])
-        i=i+1
+        
     ftp.quit()
 
 def paths_bases_globais(path_root,folderYear,prin=True):# define os endereços locais absolutos
@@ -200,14 +204,18 @@ def extracts(paths_extracts,paths_bases_globais_list,file_target,prin=True): # d
         j=j+1
     i=0
     for z in range(4):
+        
         if prin:
             print('Extraindo para '+str(paths_extracts[i]))
-        zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
-        zip1.extractall(str(paths_extracts[i]))
-        logs_info('Extraido '+file_target[i]+' com sucesso')
+        try:
+            zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
+            zip1.extractall(str(paths_extracts[i]))
+            logs_info('Extraido '+file_target[i]+' com sucesso')
+            zip1.close()     
+        except:
+            logs_info('Erro '+file_target[i]+' não encontrado')
         i=i+1
-    i=0
-    zip1.close()
+    
 
 def dia_de_hoje(): # retorna o dia atual em gnss calendar
     now = datetime.datetime.now()
@@ -352,6 +360,7 @@ def rotina_manual(dia,mes,ano): # rotina principal manual
     local_bases_folders(path_root,folderYear)
     id_target=id_target_function((conversao_dia(dia,mes,ano)),delay=False)
     file_target=names_file_target(id_target)
+    logs_bug("file_target in rotina manual",str(file_target))
     paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
     i=-1
     for exist in range(4):
@@ -423,7 +432,7 @@ def interacao_user():
     while l4:
         try:
             ano=int(input('Qual ano\n'))
-            if ano <2015 or ano>now1.year:
+            if ano <2016 or ano>now1.year:
                 print('favor inserir valor entre 2015 a ',now1.year)
                 raise ValueError
             else:
@@ -437,8 +446,23 @@ def interacao_user():
         except ValueError:
             print('Data não existente, favor digitar uma data existente')
             interacao_user()
-
-
+    lf=True        
+    while lf:                
+        print('Deseja fazer download de mais uma base?')
+        resp0=input('y/n\n')
+        try:
+            if resp0=='y' or resp0=='n':
+                if resp0=='y':
+                    interacao_user()
+                else:
+                    lf=False
+                    print('Fim da aplicação')
+                    os._exit(1)     
+            else:
+                raise ValueError
+        except ValueError:
+            print('Favor responda somente y para sim ou n para não')
+            
 def show_files():
         print('\nExibindo arquivos contidos em C:\IBGE:\n')
         time.sleep(3)
@@ -472,7 +496,6 @@ def watchdog():
 
 # ----------------------------------------------------fluxo principal ---------------------------------------------------------#
 
-
 def primeira_etapa():
     pass
 # Primeira etapa --------------------------------------------------------------------------------------------------------------#
@@ -481,13 +504,13 @@ def primeira_etapa():
 t3 = threading.Thread(target=thread3, args=('task13','none')) # verifica quantos arquivos de base há no em local
 t3.start()
 print('As bases por este programa, serão baixadas e descompactadas automaticamente em C:\IBGE\n')
-time.sleep(3)
+time.sleep(5)
 print('Aguarde enquanto faremos algumas verificações')
-time.sleep(1)
+time.sleep(2)
 t3.join()
 print('\nFoi verificado que há ao todo há %d arquivos de bases em C:\IBGE\n '%t3.check)
-time.sleep(2)
-print('Verificando se há arquivos recentes no servidor do IBGE para serem baixados')
+time.sleep(3)
+print('Verificando se há arquivos recentes no servidor do IBGE para serem baixados\n')
 time.sleep(3)
 rotina_auto(loop=31,prin=True,only_check=False)
 print('Foi verificado e atualizado os arquivos recentes com sucesso')
