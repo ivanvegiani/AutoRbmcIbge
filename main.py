@@ -3,7 +3,7 @@
 # python 3
 # ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
 # implementado sob o paradigma procedural
-# 1
+# 2
 
 """
 version:1.0
