@@ -457,7 +457,12 @@ def interacao_user():
                 else:
                     lf=False
                     print('Fim da aplicação')
+<<<<<<< HEAD
                     os._exit(1)     
+=======
+                    os._exit(1)
+                    
+>>>>>>> af92557ae451b8d7dd8382423c946af11d200e77
             else:
                 raise ValueError
         except ValueError:
