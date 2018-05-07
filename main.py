@@ -1,9 +1,9 @@
 # coding: utf-8
-# version:1.0
+# version: 1.0
 # python 3
 # ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
 # implementado sob o paradigma procedural
-# 2
+
 
 """
 version:1.0
@@ -11,9 +11,6 @@ author: Jose Ivan Silva Vegiani
 Automacao de download e descompactação de dados do rbmc (IBGE)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
 Script de código aberto e livre, cedido gratuitamente pelo autor.
-Parâmetros para download:
-Estações: Cascavel, Maringá, Curitiba e Guarapuava
-Siglas utilizadas: Cascavel: prcv , Maringá: prma, Curitiba:ufpr e Guarapuava:prgu
 """
 
 import os
@@ -26,26 +23,32 @@ from socket import gaierror
 import logging
 import threading
 
+# Configurações iniciais
+
+delay_time=30 # tempo de espera para interação humana
+loop=15 # quantidade de dias recentes para download de base
+baseFolder = 'Cascavel', 'Maringá', 'Curitiba', 'Guarapuava' # bases a serem realizadas do download automático
+path_root = 'c:\IBGE' # pasta root das bases
+sigla = ['prcv', 'prma', 'ufpr', 'prgu'] # siglas das bases
+
 # variaveis globais
-baseFolder='Cascavel','Maringá','Curitiba','Guarapuava'
-path_root='c:\IBGE'
-sigla = ['prcv', 'prma', 'ufpr','prgu']
-day=0
-folderYear=0
+
+day = 0
+folderYear = 0
 path = []
 paths_bases_globais_list = []
-folderYear =''
+folderYear = ''
 id_target = ''
 file_target = []
 paths_extracts = []
-check=0
+check = 0
 
 # instanciando o tempo
 now1 = datetime.datetime.now()
 year=str(now1.year)
 # configurando métodos dos logs
 format0='%(asctime)s - %(message)s'
-logging.basicConfig(filename='log'+year+'.txt',level=logging.DEBUG, format=format0,datefmt='%d/%m/%y %I:%M:%S %p')
+logging.basicConfig(filename=os.path.join(path_root,'log'+year+'.txt'), level=logging.INFO, format=format0, datefmt='%d/%m/%y %I:%M:%S %p')
 
 
 def logs_info(mensagem): #log de informação
@@ -98,7 +101,7 @@ def id_target_function(day_delay,delay=True): # define o alvo
         day_target=today_gnss-day_delay
     else:
         day_target=day_delay
-   
+
 # definindo o id_target
     if day_target<100 and day_target>=10 and day_target>0:
         id_target="0"+str(day_target)
@@ -148,14 +151,14 @@ def names_file_target(id_target): # define os nomes dos arquivos para busca
     global sigla
     sufix_file=id_target+"1"+".zip"
     i=0
-    for sigs in sigla: 
+    for sigs in sigla:
         file_target.append(sigla[i]+sufix_file)
         i =i+1
     return file_target
 
 def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_target,i,prin=True): # metodo para download da rbmc
-    
-    
+
+
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
@@ -167,7 +170,7 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
     p = open(str(os.path.join(paths_bases_globais_list[i],file_target[i])), "wb")
     if prin:
         print('Downloading file '+file_target[i]+' para '+str(paths_bases_globais_list[i]))
-    try:    
+    try:
         ftp.retrbinary("RETR " + file_target[i], p.write)
         p.close()
         if prin:
@@ -179,19 +182,22 @@ def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_targ
         p.close()
         os.remove(os.path.join(paths_bases_globais_list[i],file_target[i]))
         logs_bug("remove: path ",str(paths_bases_globais_list[i]))
-        
+
+    except TimeoutError:
+        print('tempo de conexao expirado')
+        logs_info('tempo de conexao expirado')
     logs_info('Download file '+file_target[i]+' sucess')
-        
+
     ftp.quit()
 
 
 def paths_bases_globais(path_root,folderYear,prin=True):# define os endereços locais absolutos
     paths_bases_globais_list=[]
     del paths_bases_globais_list[:]
-    
+
     logs_bug("folderYear in rotina manual: ", folderYear)
     logs_bug("listdir(path_root) ", str((len(os.listdir(path_root)))))
-    
+
     for ano in range(len(os.listdir(path_root))):
         logs_bug("folder year in ano_var ", str(folderYear))
         i=0
@@ -220,19 +226,19 @@ def extracts(paths_extracts,paths_bases_globais_list,file_target,prin=True): # d
         j=j+1
     i=0
     for z in baseFolder:
-        
+
         try:
             zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
             zip1.extractall(str(paths_extracts[i]))
             if prin:
                 print('Extraindo para '+str(paths_extracts[i]))
             logs_info('Extraido '+file_target[i]+' com sucesso')
-            zip1.close()     
+            zip1.close()
         except:
             os.remove(os.path.join(paths_bases_globais_list[i],file_target[i]))
             logs_info('Erro '+file_target[i]+' não encontrado')
         i=i+1
-    
+
 
 def dia_de_hoje(): # retorna o dia atual em gnss calendar
     now = datetime.datetime.now()
@@ -240,16 +246,16 @@ def dia_de_hoje(): # retorna o dia atual em gnss calendar
     return today_gnss
 
 def conversao_dia(dia,mes,ano): # converte variáveis dia, mes e ano para gnss calendar
-    
+
     var = datetime.date(ano, mes, dia)
     alvo=int(date2doy(datetime.date(var.year,var.month,var.day)))
     logs_bug('alvo', str(alvo))
     return alvo
-    
+
 
 
 def reset_folders():
-    
+
     global folderYear
     global id_target
     global file_target
@@ -277,7 +283,7 @@ def setup_folders_files(dia=0,mes=0,ano=0, manual=False):
     reset_folders()
 
     if  manual:
- 
+
         folderYear = str(ano)
         local_bases_folders(path_root, folderYear)
         id_target = id_target_function((conversao_dia(dia, mes, ano)), delay=False)
@@ -293,10 +299,10 @@ def setup_folders_files(dia=0,mes=0,ano=0, manual=False):
         file_target=names_file_target(id_target)
         paths_bases_globais_list=paths_bases_globais(path_root,folderYear)
 
-   
+
 
 def rotina_auto(loop=31,prin=True,only_check=False,day=0,delay=True): # rotina principal automatica
-    
+
     global paths_extracts
     global folderYear
     global id_target
@@ -305,9 +311,9 @@ def rotina_auto(loop=31,prin=True,only_check=False,day=0,delay=True): # rotina p
     global path_root
 
     setup_folders_files()
-    
+
     if  only_check:
-            
+
         soma_files=0
         i=0
 
@@ -322,21 +328,21 @@ def rotina_auto(loop=31,prin=True,only_check=False,day=0,delay=True): # rotina p
             except ValueError:
                 pass
             number_files = len(list_dir_file)
-            soma_files=number_files+soma_files                
+            soma_files=number_files+soma_files
             logs_bug('path',str(paths_bases_globais_list[i]))
             logs_bug('number_files',str(number_files))
             logs_bug('soma_files',str(soma_files))
             i=i+1
-        return soma_files 
+        return soma_files
 
-            
+
 
     else:
         for a1 in range(loop): # variável bb determina quantos arquivos para trás podem ser baixados em modo automático
-            
+
             reset_folders()
             folderYear = folder_year_function(day)
-            local_bases_folders(path_root, folderYear) 
+            local_bases_folders(path_root, folderYear)
 
             if delay:
                 id_target=id_target_function(day)
@@ -379,7 +385,7 @@ def rotina_auto(loop=31,prin=True,only_check=False,day=0,delay=True): # rotina p
                         except FileNotFoundError:
                             pass
                         except zipfile.BadZipFile:
-                           pass
+                            pass
                 else:
                     pass
                 logs_info('Arquivo da base '+str(file_target[i])+' existente em: '+str(paths_bases_globais_list[i]))
@@ -394,7 +400,7 @@ def rotina_base_especifica(dia,mes,ano): # rotina principal manual
     global file_target
     global paths_bases_globais_list
     global path_root
-    
+
     setup_folders_files(dia,mes,ano,manual=True)
     i=-1
 
@@ -421,7 +427,7 @@ def rotina_base_especifica(dia,mes,ano): # rotina principal manual
         print('Arquivo da base '+file_target[i]+' existente em '+str(paths_bases_globais_list[i]))
 
     reset_folders()
-   
+
 # def thread2(name,th2):
 #     schedule.every().day.at(th2).do(rotina_auto)
 #     while True:
@@ -431,10 +437,11 @@ def rotina_base_especifica(dia,mes,ano): # rotina principal manual
 def thread3(name,th3):
     global check
     check=rotina_auto(prin=False,only_check=True)
-    
-    
+
+
 
 def interacao_user():
+    
     print('Entrando em modo manual')
     time.sleep(1)
     l2=True
@@ -469,18 +476,18 @@ def interacao_user():
             conversao_dia(dia,mes,ano)
             if (ano >=2016) and (ano<=now1.year):
                 l4=False
-                rotina_base_especifica(dia,mes,ano)   
+                rotina_base_especifica(dia,mes,ano)
             else:
-                raise TypeError  # eu sei que não é TypeError, mas serviu... 
+                raise TypeError  # eu sei que não é TypeError, mas serviu...
         except TypeError:
             print('Favor inserir apenas número correspondente ao ano entre 2016 e ano atual.')
             l4=True
-           
+
         except ValueError:
             print('Data não existente, favor digitar uma data existente')
             interacao_user()
-    lf=True        
-    while lf:                
+    lf=True
+    while lf:
         print('Deseja fazer download de mais uma base?')
         resp0=input('y/n\n')
         try:
@@ -498,7 +505,7 @@ def interacao_user():
                                 segunda_etapa()
                             if resp1=='n':
                                 print('Fim da aplicação')
-                                os._exit(1)   
+                                os._exit(1)
                             else:
                                 ValueError
                     except ValueError:
@@ -507,9 +514,12 @@ def interacao_user():
                 raise ValueError
         except ValueError:
             print('Favor responda somente y para sim ou n para não')
-            
+
 def show_files():
-    print('\nExibindo arquivos contidos em C:\IBGE:\n')
+
+    global path_root
+
+    print('\nExibindo arquivos contidos em %s:\n' %path_root)
     time.sleep(2)
     setup_folders_files()
     i=-1
@@ -538,7 +548,9 @@ def watchdog():
 # Primeira etapa --------------------------------------------------------------------------------------------------------------#
 
 def primeira_etapa():
-    
+
+    global delay_time
+
     delay_time = 30   # delay time in seconds
     alarm = threading.Timer(delay_time, watchdog)
     alarm.start()
@@ -570,22 +582,27 @@ def primeira_etapa():
         except ValueError:
             print('Por favor, responda somente 1 ou 2 para os opções')
 
-        
 
-    
-    
+
+
+
 
 # Segunda etapa --------------------------------------------------------------------------------------------------------------#
 def segunda_etapa():
-    
-    
+
+
     global check
+    global loop
+    global path_root
+
     # verifica quantos arquivos de base há no em local
     t3 = threading.Thread(target=thread3, args=('task13', 'none'))
     t3.start()
-    print('As bases por este programa, serão baixadas e descompactadas automaticamente em C:\IBGE\n')
+    print('As bases por este programa, serão baixadas e descompactadas automaticamente em %s\n' %path_root)
     time.sleep(2)
-    print('Aguarde enquanto faremos algumas verificações')
+    print('\nEm %s' %path_root)
+    time.sleep(4)
+    print('\nAguarde enquanto faremos algumas verificações')
     time.sleep(3)
     t3.join()
     if check < 0:
@@ -594,10 +611,10 @@ def segunda_etapa():
     time.sleep(2)
     print('Verificando se há arquivos recentes no servidor do IBGE para serem baixados\n')
     time.sleep(2)
-    rotina_auto(loop=31, prin=True, only_check=False)
+    rotina_auto(loop, prin=True, only_check=False)
     print('Foi verificado e atualizado os arquivos recentes com sucesso')
     show_files()
-    time.sleep(3)
+    time.sleep(6)
     os._exit(1)
 
 
