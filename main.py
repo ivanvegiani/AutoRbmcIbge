@@ -47,7 +47,7 @@ now1 = datetime.datetime.now()
 year=str(now1.year)
 
 # criando a pasta raiz
-os.makedirs(os.path.join(path_root,folderYear))
+os.makedirs(os.path.join(path_root))
 
 
 # configurando métodos dos logs
