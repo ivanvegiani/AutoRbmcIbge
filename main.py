@@ -6,7 +6,7 @@
 
 
 """
-version:1.0
+version:1.0.1
 author: Jose Ivan Silva Vegiani
 Automacao de download e descompactação de dados do rbmc (IBGE)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
@@ -46,6 +46,11 @@ check = 0
 # instanciando o tempo
 now1 = datetime.datetime.now()
 year=str(now1.year)
+
+# criando a pasta raiz
+os.makedirs(os.path.join(path_root,folderYear))
+
+
 # configurando métodos dos logs
 format0='%(asctime)s - %(message)s'
 logging.basicConfig(filename=os.path.join(path_root,'log'+year+'.txt'), level=logging.INFO, format=format0, datefmt='%d/%m/%y %I:%M:%S %p')
