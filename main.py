@@ -3,9 +3,8 @@
 # ftp://geoftp.ibge.gov.br/informacoes_sobre_posicionamento_geodesico/rbmc/dados/
 # implementado sob o paradigma procedural
 
-
 """
-version:1.0.1
+version:1.1.2
 author: Jose Ivan Silva Vegiani
 Automacao de download e descompactação de dados do rbmc (IBGE)
 rbmc: Rede Brasileira de Monitoramento Contínuo dos Sistemas GNSS
@@ -25,10 +24,11 @@ import threading
 # Configurações iniciais
 
 delay_time=30 # tempo de espera para interação humana
-loop=15 # quantidade de dias recentes para download de base
+loop=10 # quantidade de dias recentes para download de base
 baseFolder = 'Cascavel', 'Maringá', 'Curitiba', 'Guarapuava' # bases a serem realizadas do download automático
 path_root = 'c:\IBGE' # pasta root das bases
 sigla = ['prcv', 'prma', 'ufpr', 'prgu'] # siglas das bases
+
 
 # variaveis globais
 
@@ -47,7 +47,8 @@ now1 = datetime.datetime.now()
 year=str(now1.year)
 
 # criando a pasta raiz
-os.makedirs(os.path.join(path_root))
+if not os.path.exists(path_root):
+    os.makedirs(os.path.join(path_root))
 
 
 # configurando métodos dos logs
@@ -162,7 +163,6 @@ def names_file_target(id_target): # define os nomes dos arquivos para busca
 
 def download_ftp(address,paths_bases_globais_list,folderYear,id_target,file_target,i,prin=True): # metodo para download da rbmc
 
-
     site_address=address
     ftp=ftplib.FTP(site_address)
     ftp.login()
@@ -221,27 +221,25 @@ def paths_bases_globais(path_root,folderYear,prin=True):# define os endereços l
         folderYear = int(folderYear)-1
     return paths_bases_globais_list
 
-def extracts(paths_extracts,paths_bases_globais_list,file_target,prin=True): # define a descompactação do zip
+def extracts(paths_extracts,paths_bases_globais_list,file_target,i,prin=True): # define a descompactação do zip
+
     j=0
     for b in baseFolder:
         if not os.path.exists(os.path.join(str(paths_bases_globais_list[j]),"extracts")):
             os.makedirs(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
         paths_extracts.append(os.path.join(str(paths_bases_globais_list[j]),"extracts"))
         j=j+1
-    i=0
-    for z in baseFolder:
-
-        try:
-            zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
-            zip1.extractall(str(paths_extracts[i]))
-            if prin:
-                print('Extraindo para '+str(paths_extracts[i]))
-            logs_info('Extraido '+file_target[i]+' com sucesso')
-            zip1.close()
-        except:
-            os.remove(os.path.join(paths_bases_globais_list[i],file_target[i]))
-            logs_info('Erro '+file_target[i]+' não encontrado')
-        i=i+1
+    try:
+        zip1 = zipfile.ZipFile(str(os.path.join(paths_bases_globais_list[i],file_target[i])))
+        zip1.extractall(str(paths_extracts[i]))
+        if prin:
+            print('Extraindo para '+str(paths_extracts[i]))
+        logs_info('Extraido '+file_target[i]+' com sucesso')
+        zip1.close()
+    except:
+        os.remove(os.path.join(paths_bases_globais_list[i],file_target[i]))
+        logs_info('Erro '+file_target[i]+' não encontrado')
+    print(os.path.join(paths_bases_globais_list[i],file_target[i]))
 
 
 def dia_de_hoje(): # retorna o dia atual em gnss calendar
@@ -370,7 +368,7 @@ def rotina_auto(loop=31,prin=True,only_check=False,day=0,delay=True): # rotina p
                                 extracts(paths_extracts,paths_bases_globais_list,file_target)
                             else:
                                 download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target,i,prin=False)
-                                extracts(paths_extracts,paths_bases_globais_list,file_target,prin=False)
+                                extracts(paths_extracts,paths_bases_globais_list,file_target,i,prin=False)
                                 paths_extracts.clear()
                         except gaierror:
                             if prin:
@@ -396,7 +394,7 @@ def rotina_auto(loop=31,prin=True,only_check=False,day=0,delay=True): # rotina p
 
             day=day+1
 
-def rotina_base_especifica(dia,mes,ano): # rotina principal manual
+def rotina_base_especifica(dia,mes,ano,index_base): # rotina principal manual
 
     global paths_extracts
     global folderYear
@@ -405,30 +403,28 @@ def rotina_base_especifica(dia,mes,ano): # rotina principal manual
     global paths_bases_globais_list
     global path_root
 
+    i=index_base
     setup_folders_files(dia,mes,ano,manual=True)
-    i=-1
 
-    for exist in baseFolder:
-        i=i+1
-        logs_bug('paths_bases_globais_list[i]',str(paths_bases_globais_list[i]))
-        if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
-            try:
-                download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target,i)
-            except gaierror:
-                print('Sem conexão com o servidor ftp://geoftp.ibge.gov.br')
-                logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
-            except ftplib.error_perm:
-                logs_info('Arquivo '+file_target[i]+' não encontrado')
-                print('Arquivo '+file_target[i]+' não encontrado')
-            try:
-                extracts(paths_extracts,paths_bases_globais_list,file_target)
-                paths_extracts.clear()
-            except FileNotFoundError:
-                pass
-            except zipfile.BadZipFile:
-                logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
-                print('Erro de extração de dados, FileNotFoundError')
-        print('Arquivo da base '+file_target[i]+' existente em '+str(paths_bases_globais_list[i]))
+    logs_bug('paths_bases_globais_list[i]',str(paths_bases_globais_list[i]))
+    if not os.path.isfile(os.path.join(paths_bases_globais_list[i],file_target[i])):
+        try:
+            download_ftp("geoftp.ibge.gov.br",paths_bases_globais_list,folderYear,id_target,file_target,i)
+        except gaierror:
+            print('Sem conexão com o servidor ftp://geoftp.ibge.gov.br')
+            logs_info('Sem conexão com servidor ftp://geoftp.ibge.gov.br')
+        except ftplib.error_perm:
+            logs_info('Arquivo '+file_target[i]+' não encontrado')
+            print('Arquivo '+file_target[i]+' não encontrado')
+        try:
+            extracts(paths_extracts,paths_bases_globais_list,file_target,i,prin=True)
+            paths_extracts.clear()
+        except FileNotFoundError:
+            pass
+        except zipfile.BadZipFile:
+            logs_info('Arquivo '+file_target[i]+' não encontrado para extraçao')
+            print('Erro de extração de dados, FileNotFoundError')
+    print('Arquivo da base '+file_target[i]+' existente em '+str(paths_bases_globais_list[i]))
 
     reset_folders()
 
@@ -442,12 +438,20 @@ def thread3(name,th3):
     global check
     check=rotina_auto(prin=False,only_check=True)
 
-
-
 def interacao_user():
-    
-    print('Entrando em modo manual')
-    time.sleep(1)
+    index_base=0
+    print('Escolha uma base para download')
+    print('Digite 0 para Cascavel')
+    print('Digite 1 para Maringá')
+    print('Digite 2 para Curitiba')
+    print('Digite 3 para Guarapuava')
+    index_base=int(input())  # sigla = ['prcv', 'prma', 'ufpr', 'prgu']
+    if index_base==0 or index_base==1 or index_base==2 or index_base==3: # tratando exceção
+        pass
+    else:
+        print('Favor digitar uma alternativa válida\n')
+        interacao_user()
+    print('Você escolheu a base %s'%sigla[index_base])
     l2=True
     while l2:
         try:
@@ -480,7 +484,7 @@ def interacao_user():
             conversao_dia(dia,mes,ano)
             if (ano >=2016) and (ano<=now1.year):
                 l4=False
-                rotina_base_especifica(dia,mes,ano)
+                rotina_base_especifica(dia,mes,ano,index_base)
             else:
                 raise TypeError  # eu sei que não é TypeError, mas serviu...
         except TypeError:
@@ -555,12 +559,11 @@ def primeira_etapa():
 
     global delay_time
 
-    delay_time = 30   # delay time in seconds
     alarm = threading.Timer(delay_time, watchdog)
     alarm.start()
     print('\nDigite enter  para iniciar\n')
     print('Se %d segundos não houver intereção, a aplicação irá para modo automático'% delay_time)
-    # print('Digite enter para continuar e escolher uma base para download')
+
     input()
     # disable the alarm after success
 
